@@ -431,6 +431,39 @@ function emailEntregaRegistrada(array $entrega, array $socio): string
 
 
 // ────────────────────────────────────────────────────────────────────────────
+// PLANTILLA — ENTREGA ANULADA (soft-delete por el admin)
+// ────────────────────────────────────────────────────────────────────────────
+/**
+ * @param array  $entrega ['id'=>int, 'fecha_entrega'=>'Y-m-d', 'kilos_aceituna'=>float, 'rendimiento'=>float]
+ * @param array  $socio   ['nombre'=>string]
+ * @param string $motivo  Texto libre que escribió el admin al anular
+ */
+function emailEntregaAnulada(array $entrega, array $socio, string $motivo): string
+{
+    $codigo = 'ALB-' . str_pad((string) $entrega['id'], 6, '0', STR_PAD_LEFT);
+    $fecha  = formatearFechaEs($entrega['fecha_entrega']);
+    $kilos  = number_format((float) $entrega['kilos_aceituna'], 2, ',', '.');
+
+    $cuerpo = '
+        <p style="margin:0 0 16px;">Hola <strong>' . htmlspecialchars($socio['nombre']) . '</strong>,</p>
+        <p style="margin:0 0 16px;">Te escribimos para informarte que tu entrega del <strong>' . $fecha . '</strong> (' . $kilos . ' kg de aceituna) ha sido <strong style="color:#C0392B;">anulada</strong> por la administración de la cooperativa.</p>
+        <p style="margin:0 0 22px;">El albarán <strong>' . $codigo . '</strong> que recibiste ya <strong>NO tiene validez</strong> y la entrega no figurará en la liquidación de la campaña.</p>
+
+        <table width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0;background:#FFF5F2;border-left:4px solid #C0392B;border-radius:8px;">
+          <tr><td style="padding:18px 22px;">
+            <p style="margin:0 0 4px;font-size:11px;letter-spacing:.08em;color:#888;text-transform:uppercase;font-weight:600;">Motivo de la anulación</p>
+            <p style="margin:0;font-family:Georgia,serif;font-size:16px;color:#333;line-height:1.5;">' . nl2br(htmlspecialchars($motivo)) . '</p>
+          </td></tr>
+        </table>
+
+        <p style="margin:0 0 16px;color:#555;font-size:14px;">Si crees que se trata de un error o quieres aclarar la situación, contacta con nosotros en <a href="mailto:' . EMAIL_REPLY_TO . '" style="color:#B8962E;">' . EMAIL_REPLY_TO . '</a> o por teléfono al <strong>+34 924 00 00 00</strong>.</p>
+        <p style="margin:0;color:#555;">Sentimos las molestias.</p>';
+
+    return emailWrapper('Entrega anulada', 'Albarán ' . $codigo . ' sin validez', $cuerpo, 'rojo');
+}
+
+
+// ────────────────────────────────────────────────────────────────────────────
 // PLANTILLAS DE VISITAS — retrocompatibilidad con código existente
 // ────────────────────────────────────────────────────────────────────────────
 function emailConfirmacionVisita(array $v): string

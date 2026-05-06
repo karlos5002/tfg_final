@@ -166,15 +166,20 @@ try {
     $campanaActiva = $pdo->query('SELECT id, codigo, precio_por_kilo FROM campanas WHERE estado = "activa" ORDER BY fecha_inicio DESC LIMIT 1')->fetch() ?: null;
 
     // Construcción dinámica del WHERE de entregas: combina socio + campaña.
+    // Las entregas anuladas SÍ se traen (para que el admin las vea tachadas
+    // y pueda revisar el histórico), pero quedan fuera de los totales más abajo.
     $sqlBase = '
         SELECT e.id, e.fecha_entrega, e.kilos_aceituna, e.rendimiento,
                e.litros_aceite, e.observaciones, e.created_at,
                e.id_campana,
+               e.anulada, e.motivo_anulacion, e.fecha_anulacion,
                u.nombre, u.apellidos, u.dni,
-               c.codigo AS campana_codigo, c.precio_por_kilo
+               c.codigo AS campana_codigo, c.precio_por_kilo,
+               ua.nombre AS admin_anula_nombre
         FROM entregas e
         INNER JOIN usuarios u ON e.id_socio = u.id
-        LEFT  JOIN campanas c ON c.id = e.id_campana
+        LEFT  JOIN campanas c  ON c.id  = e.id_campana
+        LEFT  JOIN usuarios ua ON ua.id = e.id_admin_anula
         WHERE 1 = 1
     ';
     $params = [];
@@ -202,13 +207,15 @@ try {
         $pedidos = $stmtPed->fetchAll();
     }
 
-    // Stats acotadas a los mismos filtros activos (socio y/o campaña)
+    // Stats acotadas a los mismos filtros activos (socio y/o campaña).
+    // Excluimos entregas anuladas: una entrega cancelada no debe inflar los
+    // KPIs ni la liquidación total, igual que un asiento contable rectificado.
     $sqlStats = '
         SELECT COUNT(*) as total_entregas,
                COALESCE(SUM(kilos_aceituna), 0) as total_kilos,
                COALESCE(SUM(litros_aceite), 0) as total_litros,
                COUNT(DISTINCT id_socio) as socios_activos
-        FROM entregas WHERE 1 = 1
+        FROM entregas WHERE anulada = 0
     ';
     $paramsStats = [];
     if ($filtroSocio)   { $sqlStats .= ' AND id_socio   = :id_socio';   $paramsStats[':id_socio']   = $filtroSocio; }
@@ -742,12 +749,15 @@ require_once '../includes/header.php';
                                         elseif ($rend >= 19)  { $badgeClass = 'badge-medio'; }
                                         else                  { $badgeClass = 'badge-bajo'; }
                                         $codigoAlb = 'ALB-' . str_pad((string) $e['id'], 6, '0', STR_PAD_LEFT);
-                                        // Liquidación = kilos × precio_por_kilo (NULL si no hay campaña enlazada)
+                                        $estaAnulada = ((int) ($e['anulada'] ?? 0)) === 1;
+                                        // Liquidación = kilos × precio_por_kilo (NULL si no hay campaña enlazada).
+                                        // Las entregas anuladas no contribuyen al total de liquidación.
                                         $precioE = $e['precio_por_kilo'] !== null ? (float) $e['precio_por_kilo'] : null;
                                         $liqE    = $precioE !== null ? round((float) $e['kilos_aceituna'] * $precioE, 2) : null;
-                                        if ($liqE !== null) $totalLiquidacion += $liqE;
+                                        if (!$estaAnulada && $liqE !== null) $totalLiquidacion += $liqE;
                                     ?>
-                                        <tr>
+                                        <tr class="<?= $estaAnulada ? 'fila-anulada' : '' ?>"
+                                            <?= $estaAnulada ? 'title="Entrega anulada — Motivo: ' . htmlspecialchars($e['motivo_anulacion'] ?? '') . '"' : '' ?>>
                                             <td class="text-muted"><?= $i + 1 ?></td>
                                             <td>
                                                 <i class="bi bi-calendar3 text-muted" style="font-size:0.75rem;" aria-hidden="true"></i>
@@ -792,13 +802,28 @@ require_once '../includes/header.php';
                                                 title="Kilos × <?= $precioE !== null ? number_format($precioE, 4, ',', '.') . ' €/kg' : 'sin precio' ?>">
                                                 <?= $liqE !== null ? number_format($liqE, 2, ',', '.') . ' €' : '<span class="text-muted small">—</span>' ?>
                                             </td>
-                                            <td class="text-center">
-                                                <a href="../core/generar_albaran.php?id_entrega=<?= (int) $e['id'] ?>"
-                                                   target="_blank" rel="noopener"
-                                                   class="btn btn-sm btn-outline-secondary"
-                                                   title="Descargar albarán <?= $codigoAlb ?>">
-                                                    <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
-                                                </a>
+                                            <td class="text-center" style="white-space:nowrap;">
+                                                <?php if ($estaAnulada): ?>
+                                                    <span class="badge bg-danger" title="Anulada por <?= htmlspecialchars($e['admin_anula_nombre'] ?? 'admin') ?> el <?= date('d/m/Y', strtotime($e['fecha_anulacion'])) ?>">
+                                                        <i class="bi bi-x-octagon" aria-hidden="true"></i> ANULADA
+                                                    </span>
+                                                <?php else: ?>
+                                                    <a href="../core/generar_albaran.php?id_entrega=<?= (int) $e['id'] ?>"
+                                                       target="_blank" rel="noopener"
+                                                       class="btn btn-sm btn-outline-secondary"
+                                                       title="Descargar albarán <?= $codigoAlb ?>">
+                                                        <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                                                    </a>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-danger btn-anular-entrega"
+                                                            data-id-entrega="<?= (int) $e['id'] ?>"
+                                                            data-codigo="<?= $codigoAlb ?>"
+                                                            data-socio="<?= htmlspecialchars(trim(($e['apellidos'] ?? '') . ', ' . $e['nombre'])) ?>"
+                                                            data-kilos="<?= number_format($e['kilos_aceituna'], 2, ',', '.') ?>"
+                                                            title="Anular entrega <?= $codigoAlb ?>">
+                                                        <i class="bi bi-x-octagon" aria-hidden="true"></i>
+                                                    </button>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -917,6 +942,62 @@ require_once '../includes/header.php';
         <div style="height: 3rem;"></div>
 
     </main>
+
+
+    <!-- ─── Modal de anulación de entrega ─── -->
+    <div class="modal fade" id="modalAnularEntrega" tabindex="-1" aria-labelledby="modalAnularLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header" style="background: linear-gradient(135deg, #8B5A2B, #6B4220); color: #fff;">
+            <h5 class="modal-title" id="modalAnularLabel">
+              <i class="bi bi-x-octagon" aria-hidden="true"></i> Anular entrega
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert" style="font-size:0.9rem;">
+              <i class="bi bi-info-circle-fill" aria-hidden="true" style="font-size:1.2rem;"></i>
+              <div>
+                La entrega <strong id="anular-codigo">—</strong> de <strong id="anular-socio">—</strong>
+                (<span id="anular-kilos">—</span> kg) quedará marcada como <strong>anulada</strong>:
+                no contará en KPIs ni liquidaciones, pero permanece en el histórico.
+                Se notificará al socio por email.
+              </div>
+            </div>
+            <label for="motivo-anulacion" class="form-label fw-semibold">
+              Motivo de la anulación <span class="text-danger">*</span>
+            </label>
+            <textarea class="form-control" id="motivo-anulacion" rows="3"
+                      placeholder="Ej. Error en kilos: se introdujeron 850 en lugar de 580."
+                      maxlength="255" required></textarea>
+            <div class="form-text">Mínimo 5 caracteres. El socio verá este motivo en su email.</div>
+            <div id="anular-feedback" class="mt-2"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" id="btn-confirmar-anular">
+              <i class="bi bi-x-octagon" aria-hidden="true"></i> Anular entrega
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estilos: fila tachada cuando entrega anulada -->
+    <style>
+        .table-admin tbody tr.fila-anulada {
+            opacity: 0.55;
+            background: #fdf3f0 !important;
+        }
+        .table-admin tbody tr.fila-anulada td {
+            text-decoration: line-through;
+            text-decoration-color: rgba(192, 57, 43, 0.55);
+        }
+        /* La columna de la etiqueta "ANULADA" no se tacha (se vería raro). */
+        .table-admin tbody tr.fila-anulada td:last-child {
+            text-decoration: none;
+        }
+    </style>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -1280,6 +1361,70 @@ require_once '../includes/header.php';
 
                 if (!valid) {
                     e.preventDefault();
+                }
+            });
+        }
+
+
+        // ── Anulación de entregas (soft-delete) ─────────────────────────────
+        const modalEl       = document.getElementById('modalAnularEntrega');
+        const btnConfirmar  = document.getElementById('btn-confirmar-anular');
+        const txtMotivo     = document.getElementById('motivo-anulacion');
+        const fbAnular      = document.getElementById('anular-feedback');
+        let entregaSeleccionada = null;
+        const csrfToken = '<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES) ?>';
+
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modalAnular = new bootstrap.Modal(modalEl);
+
+            // Abrir modal al pulsar cualquier botón "Anular" de la tabla
+            document.querySelectorAll('.btn-anular-entrega').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    entregaSeleccionada = btn.dataset.idEntrega;
+                    document.getElementById('anular-codigo').textContent = btn.dataset.codigo || '—';
+                    document.getElementById('anular-socio').textContent  = btn.dataset.socio  || '—';
+                    document.getElementById('anular-kilos').textContent  = btn.dataset.kilos  || '—';
+                    txtMotivo.value = '';
+                    fbAnular.innerHTML = '';
+                    modalAnular.show();
+                });
+            });
+
+            // Confirmar anulación
+            btnConfirmar.addEventListener('click', async () => {
+                const motivo = txtMotivo.value.trim();
+                if (motivo.length < 5) {
+                    fbAnular.innerHTML = '<div class="alert alert-danger py-2 mb-0">El motivo es obligatorio (mínimo 5 caracteres).</div>';
+                    return;
+                }
+
+                btnConfirmar.disabled = true;
+                btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Anulando…';
+
+                try {
+                    const r = await fetch('../api/anular_entrega.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            csrf_token: csrfToken,
+                            id_entrega: parseInt(entregaSeleccionada, 10),
+                            motivo: motivo,
+                        }),
+                    });
+                    const data = await r.json();
+                    if (!r.ok || data.error) {
+                        fbAnular.innerHTML = '<div class="alert alert-danger py-2 mb-0">' +
+                            (data.mensaje || 'Error al anular.') + '</div>';
+                    } else {
+                        fbAnular.innerHTML = '<div class="alert alert-success py-2 mb-0">' +
+                            (data.mensaje || 'Anulada.') + ' Recargando…</div>';
+                        setTimeout(() => location.reload(), 800);
+                    }
+                } catch (err) {
+                    fbAnular.innerHTML = '<div class="alert alert-danger py-2 mb-0">Error de red: ' + err.message + '</div>';
+                } finally {
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.innerHTML = '<i class="bi bi-x-octagon"></i> Anular entrega';
                 }
             });
         }

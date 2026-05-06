@@ -27,6 +27,14 @@ try {
 
     $entrega = cargarDatosAlbaran($pdo, $idEntrega, $idUsuario, $esPersonal);
 
+    // Si la entrega ha sido anulada, el albarán no tiene validez. Bloqueamos
+    // la descarga para todos: ni socio, ni operario, ni admin pueden bajarse
+    // un PDF de una entrega cancelada (queda en el histórico, no descargable).
+    if ((int) ($entrega['anulada'] ?? 0) === 1) {
+        http_response_code(410);   // 410 Gone — recurso anulado/inválido
+        die('Este albarán fue anulado y ya no tiene validez.');
+    }
+
 } catch (RuntimeException $e) {
     die('Error: ' . $e->getMessage());
 } catch (PDOException $e) {

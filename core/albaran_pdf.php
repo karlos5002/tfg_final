@@ -248,6 +248,7 @@ function cargarDatosAlbaran(PDO $pdo, int $idEntrega, int $idUsuario, bool $esPe
     $sql = '
         SELECT e.id, e.fecha_entrega, e.campana, e.kilos_aceituna, e.rendimiento,
                e.litros_aceite, e.observaciones, e.created_at,
+               e.anulada, e.motivo_anulacion, e.fecha_anulacion,
                u.nombre    AS socio_nombre,
                u.apellidos AS socio_apellidos,
                u.dni       AS socio_dni,

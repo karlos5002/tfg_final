@@ -33,7 +33,8 @@ try {
     $sql = '
         SELECT e.id, e.fecha_entrega, e.campana, e.kilos_aceituna, e.rendimiento,
                e.litros_aceite, e.observaciones, e.created_at,
-               e.id_campana, c.codigo AS campana_codigo, c.precio_por_kilo, c.estado AS campana_estado
+               e.id_campana, e.anulada, e.motivo_anulacion, e.fecha_anulacion,
+               c.codigo AS campana_codigo, c.precio_por_kilo, c.estado AS campana_estado
         FROM entregas e
         LEFT  JOIN campanas c ON c.id = e.id_campana
         WHERE e.id_socio = :id
@@ -49,16 +50,25 @@ try {
     $stmt->execute($params);
     $entregas = $stmt->fetchAll();
 
+    // Las entregas anuladas siguen visibles para el socio (puede ver el histórico),
+    // pero no contribuyen a sus totales — igual que un asiento contable rectificado.
     $totalLiquidacion = 0.0;
+    $kilosVal  = 0.0;
+    $litrosVal = 0.0;
+    $totalVal  = 0;
     foreach ($entregas as $e) {
+        if ((int) ($e['anulada'] ?? 0) === 1) continue;
+        $totalVal++;
+        $kilosVal  += (float) $e['kilos_aceituna'];
+        $litrosVal += (float) $e['litros_aceite'];
         if ($e['precio_por_kilo'] !== null) {
             $totalLiquidacion += (float) $e['kilos_aceituna'] * (float) $e['precio_por_kilo'];
         }
     }
     $stats = [
-        'total'        => count($entregas),
-        'kilos'        => array_sum(array_column($entregas, 'kilos_aceituna')),
-        'litros'       => array_sum(array_column($entregas, 'litros_aceite')),
+        'total'        => $totalVal,
+        'kilos'        => $kilosVal,
+        'litros'       => $litrosVal,
         'liquidacion'  => round($totalLiquidacion, 2),
     ];
 
@@ -183,8 +193,9 @@ require_once 'includes/header.php';
                             $precioE = $e['precio_por_kilo'] !== null ? (float) $e['precio_por_kilo'] : null;
                             $liqE    = $precioE !== null ? round((float) $e['kilos_aceituna'] * $precioE, 2) : null;
                             $estCmp  = $e['campana_estado'] ?? null;
+                            $estaAnulada = ((int) ($e['anulada'] ?? 0)) === 1;
                         ?>
-                            <tr>
+                            <tr class="<?= $estaAnulada ? 'fila-anulada' : '' ?>">
                                 <td><code class="codigo-albaran"><?= $codigo ?></code>
                                     <?php if (!empty($e['observaciones'])): ?>
                                         <br><small class="text-muted" title="<?= htmlspecialchars($e['observaciones']) ?>">
@@ -198,6 +209,11 @@ require_once 'includes/header.php';
                                         <i class="bi bi-clock"></i>
                                         <?= date('H:i', strtotime($e['created_at'])) ?>
                                     </small>
+                                    <?php if ($estaAnulada): ?>
+                                        <br><span class="badge bg-danger mt-1" title="Motivo: <?= htmlspecialchars($e['motivo_anulacion'] ?? '') ?>">
+                                            <i class="bi bi-x-octagon"></i> ANULADA
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if (!empty($e['campana_codigo'])): ?>
@@ -230,13 +246,19 @@ require_once 'includes/header.php';
                                     <?= $liqE !== null ? number_format($liqE, 2, ',', '.') . ' €' : '<span class="text-muted small">—</span>' ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="core/generar_albaran.php?id_entrega=<?= (int) $e['id'] ?>"
-                                       target="_blank" rel="noopener"
-                                       class="btn-pdf-mini"
-                                       title="Descargar albarán <?= $codigo ?>">
-                                        <i class="bi bi-file-earmark-pdf"></i>
-                                        <span>PDF</span>
-                                    </a>
+                                    <?php if ($estaAnulada): ?>
+                                        <span class="text-muted small" title="Albarán sin validez tras la anulación">
+                                            <i class="bi bi-file-earmark-x"></i> sin validez
+                                        </span>
+                                    <?php else: ?>
+                                        <a href="core/generar_albaran.php?id_entrega=<?= (int) $e['id'] ?>"
+                                           target="_blank" rel="noopener"
+                                           class="btn-pdf-mini"
+                                           title="Descargar albarán <?= $codigo ?>">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                            <span>PDF</span>
+                                        </a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -252,6 +274,16 @@ require_once 'includes/header.php';
         El rendimiento graso definitivo se confirma tras la molturación, y la liquidación mostrada
         es <strong>estimada</strong> según el precio €/kg de la campaña — el importe final se ajusta al cierre de campaña.
     </p>
+
+    <style>
+        /* Filas de entregas anuladas: visibles en el histórico pero tachadas
+           y con tinte rojizo para indicar que ya no tienen validez. */
+        tr.fila-anulada { opacity: 0.6; background: #fdf3f0 !important; }
+        tr.fila-anulada td { text-decoration: line-through; text-decoration-color: rgba(192,57,43,0.55); }
+        tr.fila-anulada td:first-child,
+        tr.fila-anulada td:nth-child(2),
+        tr.fila-anulada td:last-child { text-decoration: none; }
+    </style>
 
 </main>
 
