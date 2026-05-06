@@ -1,0 +1,28 @@
+{
+    "name": "Cooperativa San Juan Bautista — Aceite de Oliva Virgen Extra",
+    "short_name": "Almazara",
+    "description": "Cooperativa olivarera desde 1952. Aceite de oliva virgen extra de cosecha propia en Herrera del Duque, Badajoz.",
+    "start_url": "./index.php",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#2C4C3B",
+    "theme_color": "#2C4C3B",
+    "lang": "es",
+    "dir": "ltr",
+    "categories": ["food", "shopping"],
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

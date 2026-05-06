@@ -1,0 +1,41 @@
+# ──────────────────────────────────────────────
+# PHP / XAMPP — Cooperativa San Juan Bautista
+# ──────────────────────────────────────────────
+
+# Credenciales y configuración de producción
+config/stripe_config.php
+config/mail_config.php
+
+# PDFs generados dinámicamente
+facturas/*.pdf
+albaran/*.pdf
+uploads/facturas/*.pdf
+uploads/albaran/*.pdf
+
+# Dependencias instaladas (si se usa Composer)
+vendor/autoload.php
+vendor/composer/
+
+# Archivos de sesiones PHP locales
+/tmp/
+
+# Logs de errores
+*.log
+error_log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node (si se llegara a usar)
+node_modules/
+npm-debug.log*
+
+# Variables de entorno
+.env
+.env.local

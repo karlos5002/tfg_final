@@ -1,0 +1,23 @@
+# =============================================================================
+# Cooperativa San Juan Bautista — Bloqueo de acceso HTTP a /scratch/
+# =============================================================================
+# Esta carpeta contiene scripts de desarrollo y depuración (test_pass.php
+# resetea contraseñas, dump_productos.php expone la BD, etc.). NO deben
+# ser ejecutables vía URL pública — solo desde la línea de comandos por
+# el desarrollador.
+#
+# Sintaxis dual para compatibilidad: la primera línea funciona en Apache 2.4
+# (XAMPP moderno), la segunda en Apache 2.2 (sistemas antiguos). Apache
+# ignora la directiva que no entiende.
+# =============================================================================
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>

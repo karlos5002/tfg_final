@@ -1,0 +1,4454 @@
+/* ==========================================================================
+   COOPERATIVA SAN JUAN BAUTISTA — Hoja de Estilos Principal (estilos.css)
+   =========================================================================
+   Dirección de arte: "Premium Orgánico"
+   Inspiración: Marcas boutique de alta gastronomía + estética Apple.
+   Minimalismo elegante, limpio, con calidez orgánica.
+   
+   SISTEMA DE DISEÑO
+   ─────────────────
+   Paleta de colores:
+     - Fondo principal:  #FDFBF7 (crema suave, calidez natural)
+     - Primario:         #2C4C3B (verde oliva oscuro, elegancia orgánica)
+     - Acento:           #D4AF37 (oro líquido, lujo y calidad)
+     - Texto:            #1A1A1A (casi negro, máxima legibilidad — WCAG AAA)
+   
+   Tipografía (Google Fonts):
+     - Títulos:  "Playfair Display" (serif clásica, sofisticación editorial)
+     - Cuerpo:   "Inter" (sans-serif geométrica, legibilidad suprema)
+   
+   Principios CSS:
+     1. Whitespace generoso → sensación de lujo y respiración visual.
+     2. Sombras soft-UI amplias y difuminadas → profundidad sutil.
+     3. border-radius: 12px → suavidad orgánica sin infantilizar.
+     4. Transiciones 0.3s ease → micro-interacciones fluidas.
+     5. Mobile-first → responsive sin sacrificar estética.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   0. IMPORTACIÓN DE FUENTES
+   Google Fonts: Playfair Display (serif) + Inter (sans-serif).
+   Se importan solo los pesos necesarios para optimizar rendimiento.
+   
+   Decisión: @import como fallback — la carga principal se hace en el <head>
+   del HTML con <link rel="preconnect"> para máxima velocidad.
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+
+/* --------------------------------------------------------------------------
+   1. CUSTOM PROPERTIES (Variables CSS)
+   ─────────────────────────────────────
+   Centralizamos todos los tokens de diseño para mantener consistencia
+   y facilitar futuros cambios de tema o modo oscuro.
+   
+   Decisión: usamos HSL para la paleta secundaria porque facilita derivar
+   variantes (más claro/oscuro) manteniendo el tono cromático.
+   -------------------------------------------------------------------------- */
+:root {
+    /* ── Paleta principal ── */
+    --color-bg:            #FDFBF7;     /* Blanco roto/crema: calidez natural */
+    --color-bg-alt:        #F5F0E8;     /* Crema más oscura: contraste sutil entre secciones */
+    --color-primary:       #2C4C3B;     /* Verde oliva oscuro: identidad orgánica */
+    --color-primary-light: #3A6150;     /* Verde oliva medio: hovers y acentos */
+    --color-primary-dark:  #1E3529;     /* Verde oliva muy oscuro: footer */
+    --color-accent:        #D4AF37;     /* Oro líquido: botones, detalles premium */
+    --color-accent-light:  #E4C65A;     /* Oro claro: hovers y brillos */
+    --color-accent-dark:   #B8962E;     /* Oro oscuro: precios y texto dorado */
+    --color-text:          #1A1A1A;     /* Casi negro: máximo contraste (WCAG AAA) */
+    --color-text-light:    #4A4A4A;     /* Gris oscuro: texto secundario */
+    --color-text-muted:    #7A7A7A;     /* Gris medio: texto terciario/captions */
+    --color-white:         #FFFFFF;
+    --color-overlay:       rgba(26, 26, 26, 0.55);
+
+    /* ── Tipografía ── */
+    --font-heading:        'Playfair Display', 'Georgia', serif;
+    --font-body:           'Inter', 'Helvetica Neue', Arial, sans-serif;
+
+    /* ── Escala tipográfica modular (ratio ~1.25) ──
+       Usamos clamp() para fluidez responsive sin media queries.
+       min | preferred | max */
+    --fs-display:          clamp(2.8rem, 5vw + 1rem, 4.5rem);
+    --fs-h1:               clamp(2rem, 3vw + 0.5rem, 3rem);
+    --fs-h2:               clamp(1.75rem, 2.5vw + 0.5rem, 2.5rem);
+    --fs-h3:               clamp(1.25rem, 1.5vw + 0.5rem, 1.5rem);
+    --fs-body:             1rem;
+    --fs-body-lg:          1.125rem;
+    --fs-small:            0.875rem;
+    --fs-caption:          0.75rem;
+
+    /* ── Espaciado ── */
+    --space-xs:            0.5rem;
+    --space-sm:            1rem;
+    --space-md:            1.5rem;
+    --space-lg:            2.5rem;
+    --space-xl:            4rem;
+    --space-2xl:           6rem;
+    --space-3xl:           8rem;
+
+    /* ── Bordes y radios ──
+       Decisión: 12px es el radio principal. Suaviza las formas sin
+       resultar infantil. Evoca la suavidad orgánica del aceite. */
+    --radius-sm:           8px;
+    --radius-md:           12px;
+    --radius-lg:           20px;
+    --radius-xl:           30px;
+    --radius-full:         50%;
+
+    /* ── Sombras (soft-UI) ──
+       Amplias, difuminadas y con tinte verde oliva sutil.
+       Evitamos sombras negras duras: la estética es suave ("glassmorphism"). */
+    --shadow-sm:           0 2px 8px rgba(44, 76, 59, 0.06);
+    --shadow-md:           0 4px 20px rgba(44, 76, 59, 0.08);
+    --shadow-lg:           0 8px 40px rgba(44, 76, 59, 0.10);
+    --shadow-xl:           0 16px 60px rgba(44, 76, 59, 0.12);
+    --shadow-hover:        0 12px 48px rgba(44, 76, 59, 0.15);
+    --shadow-gold:         0 4px 20px rgba(212, 175, 55, 0.25);
+
+    /* ── Transiciones ── */
+    --transition-fast:     all 0.2s ease;
+    --transition-base:     all 0.3s ease;
+    --transition-slow:     all 0.5s ease;
+    --transition-spring:   all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* ── Z-index ── */
+    --z-back-to-top:       800;
+    --z-overlay:           900;
+    --z-navbar:            1000;
+
+    /* ── Navbar ── */
+    --navbar-height:       80px;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. RESET & BASE
+   ────────────────
+   Normalize comportamientos y establecer estilos base con la fuente
+   y fondo del sistema de diseño.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* Offset para anclas teniendo en cuenta la navbar fija */
+    scroll-padding-top: var(--navbar-height);
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    /* Renderizado tipográfico optimizado */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* Hipervínculos base — heredan color, el acento se aplica contextualmente */
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+/* Focus visible para accesibilidad (WCAG 2.4.7) */
+a:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+}
+
+/* Imágenes responsive por defecto */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Listas sin viñetas por defecto */
+ul, ol {
+    list-style: none;
+}
+
+/* Selección de texto personalizada con colores de marca */
+::selection {
+    background-color: var(--color-accent);
+    color: var(--color-text);
+}
+
+::-moz-selection {
+    background-color: var(--color-accent);
+    color: var(--color-text);
+}
+
+
+/* --------------------------------------------------------------------------
+   2.1. SKIP LINK (Accesibilidad WCAG 2.4.1)
+   ──────────────────────────────────────────
+   Enlace oculto que aparece solo con foco de teclado (Tab).
+   Permite a usuarios de teclado saltar directamente al contenido.
+   -------------------------------------------------------------------------- */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: var(--fs-small);
+    border-radius: var(--radius-sm);
+    z-index: calc(var(--z-navbar) + 10);
+    transition: var(--transition-fast);
+}
+
+.skip-link:focus {
+    top: var(--space-sm);
+}
+
+
+/* --------------------------------------------------------------------------
+   3. TIPOGRAFÍA
+   ─────────────
+   Headings con Playfair Display, cuerpo con Inter.
+   Optimizamos kerning y tracking para cada nivel tipográfico.
+   
+   Decisión: letter-spacing negativo en headings (-0.02em) para compactar
+   los caracteres de la serif y dar sensación de refinamiento editorial.
+   -------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+}
+
+/* Etiqueta pre-título:
+   Pequeña etiqueta en uppercase sobre cada título de sección.
+   Aporta jerarquía visual y contexto (ej. "Nuestra Esencia"). */
+.section-label {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-accent-dark);
+    margin-bottom: var(--space-xs);
+}
+
+.section-title {
+    font-size: var(--fs-h2);
+    margin-bottom: var(--space-md);
+}
+
+.section-subtitle {
+    font-size: var(--fs-body-lg);
+    color: var(--color-text-light);
+    max-width: 600px;
+    line-height: 1.8;
+}
+
+/* Ornamento decorativo: línea dorada degradada debajo de los títulos.
+   Decisión: el gradiente de oro a oro claro crea un efecto de "brillo"
+   que evoca el aceite líquido. Anchura reducida (60px) para sutileza. */
+.title-ornament {
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+    border-radius: var(--radius-full);
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+
+/* --------------------------------------------------------------------------
+   4. NAVBAR — Navegación principal
+   ────────────────────────────────
+   Estado inicial: transparente, para fundirse con el hero.
+   Al hacer scroll: efecto glassmorphism (backdrop-filter + fondo
+   semitransparente blanco). La transición entre ambos estados es suave.
+   
+   Decisión: la navbar es fixed (no sticky) para que comience
+   superpuesta al hero sin ocupar espacio en el flujo.
+   -------------------------------------------------------------------------- */
+.navbar-custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: var(--z-navbar);
+    padding: var(--space-md) 0;
+    transition: var(--transition-slow);
+    background: transparent;
+    border-bottom: 1px solid transparent;
+}
+
+/* Contenedor interno de la navbar — flexbox para alinear logo y enlaces */
+.navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ── Estado scrolled: efecto glassmorphism ──
+   Decisión: backdrop-filter: blur(20px) + saturation crea un efecto de
+   cristal esmerilado moderno. El fondo es blanco al 88% de opacidad
+   para máxima legibilidad sin perder el efecto translúcido. */
+.navbar-custom.scrolled {
+    background: rgba(253, 251, 247, 0.88);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(44, 76, 59, 0.08);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-xs) 0;
+}
+
+/* ── Logotipo textual ── */
+.navbar-brand-custom {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-white) !important;
+    letter-spacing: -0.01em;
+    transition: var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.navbar-brand-custom .brand-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.navbar-brand-custom .brand-accent {
+    color: var(--color-accent);
+}
+
+/* Al hacer scroll, el logo cambia a color oscuro */
+.navbar-custom.scrolled .navbar-brand-custom {
+    color: var(--color-primary) !important;
+}
+
+/* ── Enlaces del navbar ── */
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-custom .nav-link {
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.85) !important;
+    padding: var(--space-xs) var(--space-sm) !important;
+    position: relative;
+    transition: var(--transition-base);
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Subrayado animado dorado debajo de cada enlace */
+.navbar-custom .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    transition: var(--transition-base);
+}
+
+.navbar-custom .nav-link:hover::after,
+.navbar-custom .nav-link.active::after {
+    width: 60%;
+}
+
+.navbar-custom .nav-link:hover {
+    color: var(--color-white) !important;
+}
+
+/* Al hacer scroll, los enlaces cambian a color oscuro para contraste */
+.navbar-custom.scrolled .nav-link {
+    color: var(--color-text-light) !important;
+}
+
+.navbar-custom.scrolled .nav-link:hover,
+.navbar-custom.scrolled .nav-link.active {
+    color: var(--color-primary) !important;
+}
+
+/* ── Botón CTA del navbar ("Comprar") ──
+   Decisión: fondo dorado para destacar como acción principal.
+   Bordes muy redondeados (radius-xl) para look de "píldora". */
+.nav-cta {
+    background: var(--color-accent) !important;
+    color: var(--color-text) !important;
+    border: none !important;
+    border-radius: var(--radius-xl) !important;
+    padding: 0.5rem 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: var(--fs-small) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    transition: var(--transition-base) !important;
+    box-shadow: var(--shadow-gold);
+}
+
+.nav-cta:hover {
+    background: var(--color-accent-light) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(212, 175, 55, 0.35) !important;
+}
+
+/* El CTA no muestra subrayado animado */
+.nav-cta::after {
+    display: none !important;
+}
+
+/* Cuando hay dos botones CTA consecutivos (Tienda + Carrito), separamos
+   el segundo del primero para que no se vean pegados.
+   El selector cubre los dos casos del navbar:
+     <li.nav-item-cta>Tienda</li> <li.nav-item>Carrito</li>
+   y cualquier futura combinación de dos .nav-cta seguidos. */
+.navbar-nav .nav-item-cta + .nav-item > .nav-cta,
+.navbar-nav .nav-cta + .nav-cta {
+    margin-left: 0.6rem !important;
+}
+
+/* ── Selector de idioma del navbar ──
+   Pildora compacta con dos opciones (ES / EN) y bandera + código de 2 letras.
+   Se integra al final de la lista del navbar y respeta el contraste tanto
+   sobre hero (texto claro) como sobre las páginas con cabecera blanca. */
+.nav-item-lang {
+    display: flex;
+    align-items: center;
+    margin-left: 0.4rem;
+}
+
+.nav-lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-full);
+    background: rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(4px);
+}
+
+.nav-lang-switch .lang-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: var(--radius-full);
+    color: var(--color-white);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: var(--transition-base);
+}
+
+.nav-lang-switch .lang-opt:hover {
+    color: var(--color-accent);
+}
+
+.nav-lang-switch .lang-opt.active {
+    background: var(--color-accent);
+    color: var(--color-text);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.35);
+}
+
+.nav-lang-switch .lang-opt .lang-flag {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+.nav-lang-switch .lang-opt .lang-code {
+    line-height: 1;
+}
+
+/* Cabeceras claras (paginas que no son la home con hero): el selector cambia
+   a tonos oscuros para preservar el contraste con el fondo blanco. */
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main,
+              .mis-entregas-main, .noticias-main, .calendario-main))
+    .nav-lang-switch {
+    border-color: rgba(44, 76, 59, 0.18);
+    background: rgba(44, 76, 59, 0.05);
+}
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main,
+              .mis-entregas-main, .noticias-main, .calendario-main))
+    .nav-lang-switch .lang-opt {
+    color: var(--color-text);
+}
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main,
+              .mis-entregas-main, .noticias-main, .calendario-main))
+    .nav-lang-switch .lang-opt.active {
+    color: var(--color-text);
+}
+
+/* Cuando el navbar entra en modo "scrolled" (fondo claro sobre la home),
+   adaptamos también los colores para que no se pierdan en el blanco. */
+.navbar-custom.scrolled .nav-lang-switch {
+    border-color: rgba(44, 76, 59, 0.18);
+    background: rgba(44, 76, 59, 0.05);
+}
+.navbar-custom.scrolled .nav-lang-switch .lang-opt {
+    color: var(--color-text);
+}
+
+/* Móvil: el selector pasa a una línea propia, centrado */
+@media (max-width: 991.98px) {
+    .nav-item-lang {
+        justify-content: center;
+        margin: 0.5rem 0 0;
+    }
+}
+
+/* ── Hamburguesa animada para móvil ──
+   3 barras que se transforman en una "X" al activar el menú.
+   Oculta en desktop (≥992px), visible solo en móvil/tablet. */
+.navbar-toggler-custom {
+    border: none;
+    background: transparent;
+    padding: var(--space-xs);
+    cursor: pointer;
+    display: none;  /* Oculta por defecto (desktop) */
+    flex-direction: column;
+    gap: 5px;
+    z-index: calc(var(--z-navbar) + 5);
+}
+
+.navbar-toggler-custom .toggler-bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--color-white);
+    border-radius: var(--radius-full);
+    transition: var(--transition-base);
+    transform-origin: center;
+}
+
+.navbar-custom.scrolled .toggler-bar {
+    background: var(--color-primary);
+}
+
+/* Animación hamburguesa → X */
+.navbar-toggler-custom.active .toggler-bar:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.navbar-toggler-custom.active .toggler-bar:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+.navbar-toggler-custom.active .toggler-bar:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ── Menú colapsable (móvil) ── */
+.navbar-collapse {
+    display: flex;
+    align-items: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. HERO SECTION — Primera impresión (100vh)
+   ────────────────────────────────────────────
+   Pantalla completa con imagen de fondo + overlay oscuro para contraste.
+   El texto blanco destaca con legibilidad máxima (WCAG AAA con overlay).
+   Efecto de zoom sutil en la imagen al cargar.
+   
+   Decisión: min-height: 100vh garantiza que el hero siempre ocupe
+   toda la pantalla, independientemente del contenido.
+   -------------------------------------------------------------------------- */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Imagen de fondo — olivar andaluz (Unsplash: libre de derechos).
+   Decisión: background-attachment: fixed crea un efecto parallax sutil.
+   transform: scale(1.05) + keyframe a scale(1) produce un zoom elegante. */
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    z-index: -2;
+    transform: scale(1.05);
+    animation: heroZoom 20s ease-out forwards;
+}
+
+@keyframes heroZoom {
+    to {
+        transform: scale(1);
+    }
+}
+
+/* Overlay: capa oscura degradada para garantizar contraste texto/fondo.
+   Decisión: gradiente direccional (160deg) en lugar de color plano.
+   Esto añade profundidad y dirige la mirada hacia el centro. */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        160deg,
+        rgba(30, 53, 41, 0.78) 0%,
+        rgba(26, 26, 26, 0.62) 50%,
+        rgba(44, 76, 59, 0.72) 100%
+    );
+    z-index: -1;
+}
+
+/* Partículas decorativas flotantes (detalles dorados).
+   Decisión: añaden profundidad y movimiento sutil sin distraer.
+   Son puramente decorativas (aria-hidden). */
+.hero-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    opacity: 0.15;
+    animation: particleFloat 15s ease-in-out infinite;
+}
+
+.particle-1 { width: 6px;  height: 6px;  top: 15%; left: 10%; animation-delay: 0s;   animation-duration: 18s; }
+.particle-2 { width: 4px;  height: 4px;  top: 25%; left: 80%; animation-delay: 3s;   animation-duration: 22s; }
+.particle-3 { width: 8px;  height: 8px;  top: 60%; left: 15%; animation-delay: 5s;   animation-duration: 20s; }
+.particle-4 { width: 5px;  height: 5px;  top: 70%; left: 75%; animation-delay: 8s;   animation-duration: 16s; }
+.particle-5 { width: 3px;  height: 3px;  top: 40%; left: 50%; animation-delay: 10s;  animation-duration: 24s; }
+
+@keyframes particleFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+    25%      { transform: translate(30px, -40px) scale(1.5); opacity: 0.25; }
+    50%      { transform: translate(-20px, 20px) scale(1); opacity: 0.15; }
+    75%      { transform: translate(15px, -30px) scale(1.3); opacity: 0.2; }
+}
+
+/* Contenido del Hero — centrado con animación de entrada */
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: var(--space-lg);
+    max-width: 850px;
+    animation: fadeUp 1s ease-out 0.3s both;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Etiqueta del hero: "Desde 1952 · Jaén, España" con líneas decorativas */
+.hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-accent);
+    margin-bottom: var(--space-md);
+    animation: fadeUp 1s ease-out 0.5s both;
+}
+
+.hero-label::before,
+.hero-label::after {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--color-accent);
+}
+
+/* Título principal del hero */
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-display);
+    font-weight: 700;
+    color: var(--color-white);
+    line-height: 1.1;
+    margin-bottom: var(--space-md);
+    animation: fadeUp 1s ease-out 0.7s both;
+}
+
+.hero-title em {
+    font-style: italic;
+    color: var(--color-accent);
+}
+
+/* Subtítulo del hero */
+.hero-subtitle {
+    font-size: var(--fs-body-lg);
+    color: rgba(255, 255, 255, 0.80);
+    line-height: 1.8;
+    max-width: 550px;
+    margin: 0 auto var(--space-lg);
+    animation: fadeUp 1s ease-out 0.9s both;
+}
+
+/* Grupo de botones del hero */
+.hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    animation: fadeUp 1s ease-out 1.1s both;
+}
+
+
+/* --------------------------------------------------------------------------
+   6. BOTONES
+   ──────────
+   Sistema de botones consistente con 4 variantes:
+     - btn-gold:         Primario, fondo dorado degradado.
+     - btn-ghost:        Transparente con borde blanco (hero).
+     - btn-outline-gold: Contorno dorado sobre fondo claro.
+     - btn-card:         Sutil para tarjetas de producto.
+   
+   Todos con efecto hover de elevarse ligeramente (translateY + shadow).
+   Decisión: la transición con translateY crea profundidad y sugiere
+   interactividad. El box-shadow acompaña el movimiento.
+   -------------------------------------------------------------------------- */
+
+/* ── Botón Primario (dorado) ── */
+.btn-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--radius-xl);
+    padding: 0.9rem 2.2rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-gold);
+    text-decoration: none;
+}
+
+.btn-gold:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.40);
+    color: var(--color-text);
+}
+
+.btn-gold:active {
+    transform: translateY(-1px);
+}
+
+.btn-gold:focus-visible {
+    outline: 3px solid var(--color-white);
+    outline-offset: 3px;
+}
+
+.btn-gold .btn-icon {
+    transition: var(--transition-base);
+}
+
+.btn-gold:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+/* ── Botón Ghost (transparente, para el hero) ── */
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-xl);
+    padding: 0.85rem 2rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-decoration: none;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-white);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-3px);
+}
+
+/* ── Botón Outline Dorado ── */
+.btn-outline-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: transparent;
+    color: var(--color-accent-dark);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-xl);
+    padding: 0.75rem 2rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-decoration: none;
+}
+
+.btn-outline-gold:hover {
+    background: var(--color-accent);
+    color: var(--color-text);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-outline-gold .btn-icon {
+    transition: var(--transition-base);
+}
+
+.btn-outline-gold:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+/* ── Botón de Tarjeta (minimalista) ── */
+.btn-card {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: transparent;
+    color: var(--color-primary);
+    border: 1.5px solid var(--color-primary);
+    border-radius: var(--radius-xl);
+    padding: 0.6rem 1.5rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-decoration: none;
+}
+
+.btn-card:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+
+/* --------------------------------------------------------------------------
+   7. SECCIONES — Layout compartido
+   ────────────────────────────────
+   Todas las secciones comparten padding vertical generoso para crear
+   el efecto de "whitespace abundante" que transmite lujo.
+   
+   Decisión: 8rem (128px) de padding vertical en desktop es inusual
+   pero deliberado. El espacio vacío hace que el contenido respire
+   y se perciba como premium, no como "falta algo".
+   -------------------------------------------------------------------------- */
+.section {
+    padding: var(--space-3xl) 0;
+}
+
+.section-header {
+    margin-bottom: var(--space-xl);
+}
+
+
+/* --------------------------------------------------------------------------
+   8. SECCIÓN DE ESTADÍSTICAS (Stats Bar)
+   ───────────────────────────────────────
+   Barra horizontal con 4 cifras clave. Refuerza credibilidad.
+   Fondo primario oscuro para contraste visual con las secciones claras.
+   
+   Decisión: los números usan la fuente serif (Playfair) para dar
+   peso visual y jerarquía. El color dorado en el número atrae la mirada.
+   -------------------------------------------------------------------------- */
+.stats-bar {
+    background: var(--color-primary);
+    padding: var(--space-xl) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto decorativo: gradiente sutil */
+.stats-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    pointer-events: none;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+    text-align: center;
+}
+
+.stat-item {
+    position: relative;
+    padding: var(--space-sm) 0;
+}
+
+/* Separador vertical entre stats (excepto el último) */
+.stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 50%;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.stat-number {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 3vw, 3rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+    display: inline;
+}
+
+.stat-suffix {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+}
+
+.stat-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: var(--space-xs);
+}
+
+
+/* --------------------------------------------------------------------------
+   9. SECCIÓN "NUESTRA ESENCIA" (ABOUT)
+   ─────────────────────────────────────
+   Layout asimétrico: texto e imagen en 2 columnas (5:7).
+   La imagen tiene bordes redondeados, sombra orgánica y un marco
+   decorativo dorado desplazado.
+   
+   Decisión: la asimetría 5:7 rompe la monotonía visual y crea tensión
+   compositiva elegante. Da prioridad al texto sin quitar protagonismo
+   a la imagen.
+   -------------------------------------------------------------------------- */
+.about-section {
+    background-color: var(--color-bg);
+    overflow: hidden;
+}
+
+/* Wrapper de la imagen con posición relativa para el badge y la deco */
+.about-img-wrapper {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: visible;
+}
+
+/* Marco decorativo dorado desplazado detrás de la imagen.
+   Decisión: este "offset border" añade sofisticación editorial
+   y conecta visualmente con el color acento de la marca. */
+.about-img-deco {
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    z-index: -1;
+    opacity: 0.4;
+    transition: var(--transition-slow);
+}
+
+.about-img-wrapper:hover .about-img-deco {
+    top: -20px;
+    left: -20px;
+    opacity: 0.6;
+}
+
+.about-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition-slow);
+}
+
+.about-img-wrapper:hover img {
+    transform: scale(1.02);
+}
+
+/* Badge flotante: dato de credibilidad ("+ 70 años de tradición") */
+.about-badge {
+    position: absolute;
+    bottom: var(--space-lg);
+    right: calc(var(--space-lg) * -0.5);
+    background: var(--color-white);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    min-width: 140px;
+    transition: var(--transition-base);
+}
+
+.about-badge:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.about-badge-number {
+    font-family: var(--font-heading);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1;
+    display: block;
+}
+
+.about-badge-text {
+    font-size: var(--fs-caption);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-top: 4px;
+    display: block;
+    line-height: 1.3;
+}
+
+/* Contenedor del texto del about */
+.about-text-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.about-text-content p {
+    color: var(--color-text-light);
+    font-size: var(--fs-body-lg);
+    line-height: 1.9;
+    margin-bottom: var(--space-md);
+}
+
+/* Lista de valores con checkmarks dorados en grid 2×2 */
+.values-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.values-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--fs-body);
+    font-weight: 500;
+    color: var(--color-text);
+    transition: var(--transition-base);
+}
+
+.values-list li:hover {
+    transform: translateX(4px);
+}
+
+.values-list li .value-icon {
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. SECCIÓN "NUESTROS PRODUCTOS" — Grid de tarjetas
+   ────────────────────────────────────────────────────
+   Grid de 3 columnas con tarjetas minimalistas de producto.
+   Las tarjetas flotan al hover (translateY -8px + shadow más intensa).
+   
+   Decisión: fondo --color-bg-alt (crema más oscuro) para diferenciar
+   esta sección del about y crear ritmo visual claro/oscuro.
+   -------------------------------------------------------------------------- */
+.products-section {
+    background-color: var(--color-bg-alt);
+}
+
+.product-card {
+    background: var(--color-white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    border: 1px solid rgba(44, 76, 59, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Efecto hover: la tarjeta "flota" — se eleva y la sombra se intensifica */
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Contenedor de imagen del producto */
+.product-card-img {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-bg) 0%, #f0ede5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+}
+
+.product-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: var(--transition-slow);
+}
+
+.product-card:hover .product-card-img img {
+    transform: scale(1.05);
+}
+
+/* Badge de categoría superpuesto a la imagen del producto */
+.product-badge {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    font-family: var(--font-body);
+    font-size: var(--fs-caption);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 5px 14px;
+    border-radius: var(--radius-xl);
+    z-index: 2;
+}
+
+/* Variantes de color para los badges */
+.product-badge-premium {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+    color: var(--color-text);
+}
+
+.product-badge-eco {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.product-badge-suave {
+    background: var(--color-bg);
+    color: var(--color-primary);
+    border: 1px solid rgba(44, 76, 59, 0.15);
+}
+
+/* Cuerpo de la tarjeta de producto */
+.product-card-body {
+    padding: var(--space-md) var(--space-md) var(--space-lg);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-xs);
+}
+
+.product-card-desc {
+    font-size: var(--fs-body);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: var(--space-md);
+    flex: 1;
+}
+
+/* Footer de cada tarjeta: precio + botón de acción */
+.product-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: var(--space-sm);
+    border-top: 1px solid rgba(44, 76, 59, 0.06);
+}
+
+.product-price {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-accent-dark);
+}
+
+.product-price .price-unit {
+    font-family: var(--font-body);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    color: var(--color-text-muted);
+}
+
+
+/* --------------------------------------------------------------------------
+   11. SECCIÓN "NUESTRO PROCESO" — 3 pasos horizontales
+   ─────────────────────────────────────────────────────
+   3 tarjetas conectadas con líneas visuales que explican el proceso
+   de elaboración del aceite. Refuerza transparencia y artesanía.
+   
+   Decisión: los números grandes semitransparentes ("01", "02", "03")
+   crean un efecto tipográfico editorial que rompe la uniformidad.
+   -------------------------------------------------------------------------- */
+.process-section {
+    background-color: var(--color-bg);
+}
+
+.process-grid {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+}
+
+.process-step {
+    flex: 1;
+    text-align: center;
+    padding: var(--space-lg) var(--space-md);
+    position: relative;
+}
+
+/* Número grande semitransparente de fondo */
+.process-step-number {
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    opacity: 0.12;
+    line-height: 1;
+    margin-bottom: var(--space-sm);
+    position: absolute;
+    top: var(--space-sm);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Icono del paso dentro de un círculo verdoso */
+.process-step-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, rgba(44, 76, 59, 0.08), rgba(44, 76, 59, 0.04));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-md);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    transition: var(--transition-base);
+    position: relative;
+    z-index: 1;
+}
+
+.process-step:hover .process-step-icon {
+    background: var(--color-primary);
+    color: var(--color-white);
+    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+}
+
+.process-step-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.process-step-desc {
+    font-size: var(--fs-body);
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* Conector visual entre pasos (línea + flecha) */
+.process-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: calc(var(--space-lg) + 40px);
+    color: var(--color-accent);
+    opacity: 0.4;
+    font-size: 1.2rem;
+    min-width: 40px;
+}
+
+.connector-line {
+    width: 30px;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+}
+
+
+/* --------------------------------------------------------------------------
+   12. SECCIÓN DE CTA (CALL TO ACTION) — "Visita nuestra almazara"
+   ─────────────────────────────────────────────────────────────────
+   Banner inmersivo a pantalla completa con imagen de fondo y overlay
+   verde oliva para cohesión con la marca. Rompe la monotonía de
+   secciones con fondo claro.
+   -------------------------------------------------------------------------- */
+.cta-section {
+    position: relative;
+    padding: var(--space-3xl) 0;
+    background-image: url('https://images.unsplash.com/photo-1515516969-d4008cc6241a?q=80&w=1974&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.cta-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(44, 76, 59, 0.92) 0%,
+        rgba(30, 53, 41, 0.87) 100%
+    );
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: var(--color-white);
+}
+
+.cta-content .section-label {
+    color: var(--color-accent);
+}
+
+.cta-content .section-title {
+    color: var(--color-white);
+    max-width: 700px;
+    margin: 0 auto var(--space-md);
+}
+
+.cta-subtitle {
+    font-size: var(--fs-body-lg);
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 500px;
+    margin: 0 auto var(--space-lg);
+    line-height: 1.8;
+}
+
+
+/* --------------------------------------------------------------------------
+   13. FOOTER
+   ──────────
+   Fondo verde oliva oscuro (--color-primary-dark) para cerrar visualmente
+   la página con un tono orgánico y serio.
+   
+   Estructura: 3 columnas principales:
+     1. Marca + descripción + redes sociales
+     2. Enlaces de navegación rápida
+     3. Información de contacto con iconos
+   
+   Barra inferior separada con copyright y enlaces legales.
+   -------------------------------------------------------------------------- */
+.footer {
+    background-color: var(--color-primary-dark);
+    color: rgba(255, 255, 255, 0.75);
+    padding-top: var(--space-3xl);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gradiente decorativo sutil en la parte superior del footer */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-accent),
+        transparent
+    );
+    opacity: 0.4;
+}
+
+/* Marca del footer */
+.footer-brand {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: var(--space-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.footer-brand:hover {
+    opacity: 0.85;
+}
+
+.footer-brand .brand-icon {
+    font-size: 1.3rem;
+}
+
+.footer-brand .brand-accent {
+    color: var(--color-accent);
+}
+
+.footer-desc {
+    font-size: var(--fs-body);
+    line-height: 1.8;
+    max-width: 300px;
+    margin-bottom: var(--space-md);
+}
+
+/* Redes sociales — iconos circulares con hover dorado */
+.footer-social {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.1rem;
+    transition: var(--transition-base);
+    text-decoration: none;
+}
+
+.social-link:hover {
+    background: var(--color-accent);
+    color: var(--color-text);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-gold);
+}
+
+/* Títulos de columna del footer */
+.footer-heading {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    font-weight: 700;
+    color: var(--color-white);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-md);
+}
+
+/* Enlaces del footer */
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: var(--space-xs);
+}
+
+.footer-links a {
+    font-size: var(--fs-body);
+    color: rgba(255, 255, 255, 0.65);
+    transition: var(--transition-base);
+    display: inline-block;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: var(--color-accent);
+    transform: translateX(4px);
+}
+
+/* Información de contacto en el footer */
+.footer-contact {
+    list-style: none;
+}
+
+.footer-contact li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    font-size: var(--fs-body);
+}
+
+.footer-contact-icon {
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.footer-contact-link {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.footer-contact-link:hover {
+    color: var(--color-accent);
+}
+
+/* ── Barra inferior del footer — copyright y enlaces legales ── */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    padding: var(--space-md) 0;
+    margin-top: var(--space-xl);
+}
+
+.footer-bottom-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.footer-copyright {
+    font-size: var(--fs-small);
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+}
+
+.footer-legal {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.footer-legal a {
+    font-size: var(--fs-small);
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.footer-legal a:hover {
+    color: var(--color-accent);
+}
+
+
+/* --------------------------------------------------------------------------
+   14. BOTÓN "VOLVER ARRIBA"
+   ─────────────────────────
+   Botón flotante que aparece al hacer scroll. Permite volver al
+   inicio de la página cómodamente.
+   
+   Decisión: círculo dorado con flecha. Fijo en la esquina inferior
+   derecha. Aparece con transición y se eleva al hover.
+   -------------------------------------------------------------------------- */
+.back-to-top {
+    position: fixed;
+    bottom: var(--space-lg);
+    right: var(--space-lg);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: var(--z-back-to-top);
+    box-shadow: var(--shadow-gold);
+    text-decoration: none;
+    transition: var(--transition-base);
+
+    /* Oculto por defecto */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.45);
+    color: var(--color-text);
+}
+
+
+/* --------------------------------------------------------------------------
+   15. ANIMACIONES — Scroll Reveal
+   ────────────────────────────────
+   Elementos con clase .reveal comienzan invisibles y desplazados
+   hacia abajo. Al entrar en viewport (controlado por IntersectionObserver
+   en el JS), se les añade .revealed que activa la transición.
+   -------------------------------------------------------------------------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Delay escalonado para elementos en secuencia (ej. 3 product cards) */
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.30s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+
+
+/* --------------------------------------------------------------------------
+   16. SCROLL INDICATOR (Hero)
+   ───────────────────────────
+   Indicador visual "haz scroll" en la parte inferior del hero.
+   Diseño de un ratón minimalista con punto animado que sube y baja.
+   -------------------------------------------------------------------------- */
+.scroll-indicator {
+    position: absolute;
+    bottom: var(--space-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+    animation: fadeUp 1s ease-out 1.5s both;
+}
+
+.scroll-indicator span {
+    font-size: var(--fs-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+}
+
+.scroll-mouse {
+    width: 24px;
+    height: 38px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 12px;
+    position: relative;
+}
+
+.scroll-mouse::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    animation: scrollBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+    0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    50%      { opacity: 0.3; transform: translateX(-50%) translateY(12px); }
+}
+
+
+/* --------------------------------------------------------------------------
+   17. UTILIDADES
+   ──────────────
+   Clases de utilidad para usar directamente en el HTML.
+   -------------------------------------------------------------------------- */
+.text-accent { color: var(--color-accent) !important; }
+.text-primary-custom { color: var(--color-primary) !important; }
+.bg-primary-custom { background-color: var(--color-primary) !important; }
+.fw-serif { font-family: var(--font-heading); }
+
+
+/* --------------------------------------------------------------------------
+   17b. BOTÓN "SOCIOS" EN NAVBAR
+   ─────────────────────────────
+   Decisión: estilo outline con icono de persona para diferenciar
+   del CTA de compra (dorado sólido). Convive visualmente sin competir.
+   -------------------------------------------------------------------------- */
+.nav-login {
+    border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+    border-radius: var(--radius-xl) !important;
+    padding: 0.4rem 1.2rem !important;
+    font-weight: 500 !important;
+    transition: var(--transition-base) !important;
+    margin-left: 0.5rem;
+}
+
+.nav-login:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: var(--color-white) !important;
+}
+
+.nav-login::after {
+    display: none !important;
+}
+
+/* Al hacer scroll, el botón de socios se adapta */
+.navbar-custom.scrolled .nav-login {
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+}
+
+.navbar-custom.scrolled .nav-login:hover {
+    background: var(--color-primary) !important;
+    color: var(--color-white) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   17c. MODAL DE LOGIN PARA SOCIOS
+   ────────────────────────────────
+   Modal centrado con estética premium. Glassmorphism en el fondo.
+   Formulario minimalista: campos con bordes sutiles, icono + label,
+   botón dorado de envío.
+   -------------------------------------------------------------------------- */
+
+/* Backdrop personalizado del modal */
+.modal-backdrop.show {
+    background: rgba(30, 53, 41, 0.60);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+/* Contenedor del modal */
+.login-modal-content {
+    background: var(--color-white);
+    border: 1px solid rgba(44, 76, 59, 0.08);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+}
+
+/* Cabecera del modal */
+.login-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-lg) var(--space-sm);
+    border-bottom: none;
+}
+
+.login-modal-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.login-modal-brand .brand-icon {
+    font-size: 1.8rem;
+}
+
+.login-modal-brand .modal-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+}
+
+/* Botón cerrar personalizado */
+.btn-close-modal {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-close-modal:hover {
+    background: rgba(44, 76, 59, 0.06);
+    color: var(--color-text);
+}
+
+/* Cuerpo del modal */
+.login-modal-body {
+    padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}
+
+.login-desc {
+    font-size: var(--fs-body);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--space-lg);
+}
+
+/* Campos del formulario */
+.login-field {
+    margin-bottom: var(--space-md);
+}
+
+.login-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.4rem;
+}
+
+.login-label i {
+    color: var(--color-accent-dark);
+    font-size: 0.9rem;
+}
+
+.login-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1.5px solid rgba(44, 76, 59, 0.12);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    color: var(--color-text);
+    background: var(--color-bg);
+    transition: var(--transition-base);
+    outline: none;
+}
+
+.login-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+}
+
+.login-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    background: var(--color-white);
+}
+
+/* Estado de error en inputs */
+.login-input-error {
+    border-color: #E74C3C !important;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12) !important;
+    animation: inputShake 0.4s ease;
+}
+
+@keyframes inputShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+/* Wrapper de contraseña (input + toggle) */
+.login-password-wrapper {
+    position: relative;
+}
+
+.login-password-wrapper .login-input {
+    padding-right: 3rem;
+}
+
+.login-toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 0.8rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    transition: var(--transition-base);
+}
+
+.login-toggle-password:hover {
+    color: var(--color-primary);
+}
+
+/* Opciones: Recordarme + Olvidé contraseña */
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.login-remember {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--fs-small);
+    color: var(--color-text-light);
+    cursor: pointer;
+}
+
+.login-remember input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-forgot {
+    font-size: var(--fs-small);
+    color: var(--color-accent-dark);
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.login-forgot:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+/* Botón de envío del login */
+.login-submit {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem;
+    font-size: var(--fs-body);
+}
+
+.login-submit:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Pie del modal */
+.login-modal-footer {
+    padding: var(--space-sm) var(--space-lg) var(--space-md);
+    border-top: 1px solid rgba(44, 76, 59, 0.06);
+    text-align: center;
+}
+
+.login-modal-footer p {
+    font-size: var(--fs-small);
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.login-modal-footer a {
+    color: var(--color-accent-dark);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.login-modal-footer a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+
+/* --------------------------------------------------------------------------
+   17d. SECCIÓN DE MAPA (Google Maps)
+   ───────────────────────────────────
+   Iframe de Google Maps con bordes redondeados y sombra, coherente con
+   el sistema de diseño. Info card superpuesta con datos de ubicación.
+   -------------------------------------------------------------------------- */
+.map-section {
+    background-color: var(--color-bg-alt);
+}
+
+.map-wrapper {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+}
+
+/* Tarjeta de información flotante sobre el mapa */
+.map-info-card {
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    z-index: 10;
+    background: var(--color-white);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    max-width: 380px;
+    transition: var(--transition-base);
+}
+
+.map-info-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+}
+
+.map-info-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.map-info-icon i {
+    font-size: 1.3rem;
+    color: var(--color-text);
+}
+
+.map-info-title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 2px;
+}
+
+.map-info-address {
+    font-size: var(--fs-small);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Contenedor del iframe */
+.map-container {
+    width: 100%;
+    height: 450px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: saturate(0.85) contrast(1.05);
+    transition: var(--transition-slow);
+}
+
+.map-container iframe:hover,
+.map-container iframe:focus {
+    filter: saturate(1) contrast(1);
+}
+
+
+
+/* ==========================================================================
+   18. RESPONSIVE DESIGN (Mobile-First Overrides)
+   ═══════════════════════════════════════════════
+   Breakpoints alineados con Bootstrap 5:
+     sm: 576px   md: 768px   lg: 992px   xl: 1200px
+   
+   Decisión: adaptamos cada componente individualmente para mantener
+   la estética premium en todas las pantallas.
+   ========================================================================== */
+
+/* ── Tablets y móviles grandes (< 992px) ── */
+@media (max-width: 991.98px) {
+    :root {
+        --navbar-height: 70px;
+    }
+
+    .hero-title {
+        font-size: clamp(2rem, 6vw, 3rem);
+    }
+
+    .about-badge {
+        right: var(--space-sm);
+        bottom: var(--space-sm);
+    }
+
+    .about-img-deco {
+        display: none; /* Deco dorada demasiado grande en mobile */
+    }
+
+    .values-list {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stats: 2 columnas en tablet */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+
+    .stat-item:not(:last-child)::after {
+        display: none;
+    }
+
+    /* Proceso: vertical en tablet */
+    .process-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .process-connector {
+        transform: rotate(90deg);
+        padding: 0;
+        margin: var(--space-xs) 0;
+    }
+
+    .process-step {
+        max-width: 400px;
+    }
+
+    /* ── Menú móvil colapsable ── */
+    .navbar-collapse {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: var(--space-sm);
+        right: var(--space-sm);
+        background: rgba(253, 251, 247, 0.97);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        backdrop-filter: blur(20px) saturate(180%);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        box-shadow: var(--shadow-xl);
+        border: 1px solid rgba(44, 76, 59, 0.08);
+    }
+
+    /* Mostrar hamburguesa en móvil/tablet */
+    .navbar-toggler-custom {
+        display: flex;
+    }
+
+    /* Navbar inner necesita wrap para el menú colapsado */
+    .navbar-inner {
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    .navbar-collapse.show {
+        display: block;
+        animation: menuSlideIn 0.3s ease forwards;
+    }
+
+    @keyframes menuSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        gap: 0.35rem;   /* aire vertical entre items en móvil */
+    }
+
+    .navbar-custom .nav-link {
+        color: var(--color-text) !important;
+        padding: var(--space-xs) var(--space-sm) !important;
+        border-radius: var(--radius-sm);
+        display: block;
+    }
+
+    /* En menú vertical, anular el margin-left lateral de los CTA y
+       darles aire vertical: el carrito ya no se pega a "Tienda". */
+    .navbar-nav .nav-item-cta + .nav-item > .nav-cta,
+    .navbar-nav .nav-cta + .nav-cta {
+        margin-left: 0 !important;
+        margin-top: 0.4rem !important;
+    }
+
+    .navbar-custom .nav-link::after {
+        display: none;
+    }
+
+    .navbar-custom .nav-link:hover {
+        color: var(--color-primary) !important;
+        background: rgba(44, 76, 59, 0.05);
+    }
+
+    .nav-item-cta {
+        margin-top: var(--space-xs);
+        padding-top: var(--space-xs);
+        border-top: 1px solid rgba(44, 76, 59, 0.08);
+    }
+
+    .nav-cta {
+        display: block !important;
+        text-align: center !important;
+    }
+
+    /* Socios button en menú móvil */
+    .nav-login {
+        border-color: var(--color-primary) !important;
+        color: var(--color-primary) !important;
+        display: block !important;
+        text-align: center !important;
+        margin-left: 0 !important;
+        margin-top: var(--space-xs);
+    }
+
+    /* Mapa: reducir altura y apilar info card */
+    .map-container {
+        height: 350px;
+    }
+
+    .map-info-card {
+        position: relative;
+        top: auto;
+        left: auto;
+        max-width: 100%;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        box-shadow: none;
+        border-bottom: 1px solid rgba(44, 76, 59, 0.08);
+    }
+
+    /* Footer en tablet */
+    .footer-bottom-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+
+/* ── Móviles (< 768px) ── */
+@media (max-width: 767.98px) {
+    .section {
+        padding: var(--space-2xl) 0;
+    }
+
+    .hero-content {
+        padding: var(--space-md);
+    }
+
+    /* Desactivar parallax en móvil por rendimiento */
+    .hero-bg {
+        background-attachment: scroll;
+    }
+
+    .cta-section {
+        background-attachment: scroll;
+    }
+
+    /* Imagen del about primero en móvil (invierte columnas) */
+    .about-row {
+        flex-direction: column-reverse;
+    }
+
+    .about-img-wrapper {
+        margin-bottom: var(--space-lg);
+    }
+
+    .product-card-img {
+        height: 240px;
+    }
+
+    /* Stats: 2 columnas más compactas */
+    .stats-grid {
+        gap: var(--space-sm);
+    }
+
+    .footer-legal {
+        justify-content: center;
+    }
+
+    /* Hero botones en columna */
+    .hero-actions {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    /* Login modal: padding reducido */
+    .login-modal-header,
+    .login-modal-body {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+    }
+
+    .login-modal-footer {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+    }
+
+    /* Mapa más compacto */
+    .map-container {
+        height: 280px;
+    }
+}
+
+
+/* ── Móviles pequeños (< 576px) ── */
+@media (max-width: 575.98px) {
+    .hero-label {
+        font-size: var(--fs-caption);
+    }
+
+    .btn-gold,
+    .btn-outline-gold,
+    .btn-ghost {
+        padding: 0.75rem 1.5rem;
+        font-size: var(--fs-caption);
+    }
+
+    .hero-subtitle {
+        font-size: var(--fs-body);
+    }
+
+    .scroll-indicator {
+        display: none;
+    }
+
+    /* Stats: 1 columna en pantalla muy pequeña */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .product-card-footer {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: flex-start;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   19. REDUCED MOTION (Accesibilidad WCAG 2.3.3)
+   ──────────────────────────────────────────────
+   Los usuarios que configuran "reducir movimiento" en su SO
+   verán transiciones instantáneas en lugar de animaciones.
+   
+   Decisión: anulamos TODAS las animaciones y transiciones,
+   no solo las explícitas. Esto respeta la preferencia del usuario
+   de forma exhaustiva.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .hero-bg {
+        animation: none;
+        transform: scale(1);
+        background-attachment: scroll;
+    }
+
+    .cta-section {
+        background-attachment: scroll;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+
+    .particle {
+        display: none;
+    }
+}
+
+
+/* ==========================================================================
+   NAVBAR SOBRE HEROS CLAROS  (páginas internas: calculadora, tienda-like)
+   --------------------------------------------------------------------------
+   La navbar global es transparente con texto BLANCO, pensada para la home
+   (hero con foto oscura). En páginas internas con `.page-hero` (fondo crema)
+   ese mismo blanco quedaba invisible. Aquí la forzamos al aspecto "scrolled"
+   (fondo cristal claro + texto oscuro) desde el primer frame, sin esperar a
+   que haga scroll. Usamos :has() (soportado en todos los navegadores modernos).
+   ========================================================================== */
+/* Páginas internas con fondo claro (calculadora, confirmación de compra,
+   votaciones, panel del socio…) NO tienen hero oscuro, así que la navbar
+   blanca por defecto quedaba invisible. Aquí la forzamos al estado "scrolled"
+   (cristal claro + texto oscuro). Para añadir una página nueva basta con
+   incluir su clase principal en el :is() — el resto cae en cascada. */
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-custom {
+    background: rgba(253, 251, 247, 0.88);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(44, 76, 59, 0.08);
+    box-shadow: var(--shadow-sm);
+}
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-brand-custom {
+    color: var(--color-primary) !important;
+}
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-custom .nav-link {
+    color: var(--color-text-light) !important;
+}
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-custom .nav-link:hover,
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-custom .nav-link.active {
+    color: var(--color-primary) !important;
+}
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-toggler-custom .toggler-bar {
+    background: var(--color-primary);
+}
+/* El CTA dorado conserva su color propio (no se hereda del modo claro) */
+body:has(:is(.page-hero, .exito-card, .votaciones-main, .panel-socio-main, .mis-entregas-main, .noticias-main, .calendario-main)) .navbar-custom .nav-cta {
+    color: var(--color-text) !important;
+}
+
+/* Empuje del contenido: el hero claro necesita dejar aire para la navbar
+   fija que ahora es visible desde el inicio. */
+body:has(.page-hero) main { scroll-margin-top: 80px; }
+
+
+/* ==========================================================================
+   CALCULADORA DE RENDIMIENTO DEL OLIVAR  —  calculadora.php
+   --------------------------------------------------------------------------
+   Reglas propias de la vista. Reutilizan los tokens globales (:root) para
+   coherencia con el resto del sistema "Premium Orgánico".
+   ========================================================================== */
+
+/* ── Hero de página (cabecera con acento dorado) ───────────────────────── */
+.page-hero {
+    background:
+        radial-gradient(circle at 20% 0%, rgba(212,175,55,0.10), transparent 60%),
+        linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-alt) 100%);
+    /* 8rem top = 128px: margen seguro para la navbar fija (la pastilla
+       .hero-label quedaba pisada con 6rem cuando la navbar está en modo claro). */
+    padding: 8rem 0 4rem;
+    border-bottom: 1px solid rgba(44,76,59,0.06);
+    text-align: center;
+}
+.page-hero h1 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--color-primary);
+    margin: 0.8rem 0 1rem;
+    line-height: 1.15;
+}
+.page-hero h1 em {
+    color: var(--color-accent-dark);
+    font-style: italic;
+}
+.page-hero .hero-desc {
+    max-width: 620px;
+    margin: 0 auto;
+    color: var(--color-text-light, #5a5a5a);
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+.hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(212,175,55,0.15);
+    color: var(--color-accent-dark);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+}
+
+/* ── Sección principal ─────────────────────────────────────────────────── */
+.calc-section { padding: 3.5rem 0 4rem; }
+
+/* ── Tarjeta del formulario (izquierda) ────────────────────────────────── */
+.calc-form-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 2.2rem 2rem;
+    transition: var(--transition-base);
+}
+.calc-form-card:hover { box-shadow: var(--shadow-lg); }
+
+.form-section-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    margin: 0 0 0.4rem;
+}
+.form-section-desc {
+    color: var(--color-text-light, #666);
+    font-size: 0.92rem;
+    margin-bottom: 1.8rem;
+    line-height: 1.5;
+}
+
+/* ── Campos de formulario ──────────────────────────────────────────────── */
+.calc-field { margin-bottom: 1.5rem; }
+.calc-label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+}
+.calc-label i { color: var(--color-accent-dark); }
+.label-hint {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-text-muted, #888);
+    margin-left: auto;
+    font-size: 0.75rem;
+}
+
+/* Inputs con foco en verde corporativo (bordes y glow tenue) */
+.calc-input, .calc-select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text, #222);
+    background: var(--color-bg);
+    border: 1.5px solid rgba(44,76,59,0.15);
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+    appearance: none;
+}
+.calc-input:focus, .calc-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(44,76,59,0.12);
+}
+.calc-input:hover, .calc-select:hover { border-color: rgba(44,76,59,0.35); }
+
+/* Select con chevron personalizado en verde oliva */
+.select-wrapper { position: relative; }
+.calc-select {
+    padding-right: 2.8rem;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232C4C3B'><path d='M8 11L3 6h10z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 14px;
+}
+
+/* Slider de nº de olivos + badge de conteo */
+.olivos-visual {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.75rem;
+}
+.olivos-range {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    appearance: none;
+    background: var(--color-bg-alt);
+    outline: none;
+    cursor: pointer;
+}
+.olivos-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 3px solid #fff;
+    box-shadow: var(--shadow-gold);
+    cursor: grab;
+    transition: var(--transition-fast);
+}
+.olivos-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.olivos-range::-moz-range-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 3px solid #fff;
+    box-shadow: var(--shadow-gold);
+    cursor: grab;
+}
+.badge-count {
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    min-width: 90px;
+    text-align: center;
+}
+
+/* ── Tarjeta de resultados (derecha) — más "premium" ───────────────────── */
+.results-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 100px;
+    transition: var(--transition-base);
+}
+.results-card:hover { box-shadow: var(--shadow-hover); }
+
+.results-header {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: #fff;
+    padding: 1.8rem 2rem;
+    text-align: center;
+    position: relative;
+}
+.results-header::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -1px 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+}
+.results-icon {
+    width: 52px; height: 52px;
+    margin: 0 auto 0.7rem;
+    background: rgba(212,175,55,0.22);
+    color: var(--color-accent-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+.results-header h2 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 1.25rem;
+    margin: 0 0 0.35rem;
+    color: #fff;
+}
+.results-header p {
+    margin: 0;
+    font-size: 0.82rem;
+    opacity: 0.8;
+}
+
+.results-body { padding: 1.5rem 2rem; }
+
+.result-metric {
+    padding: 1rem 0;
+    border-bottom: 1px dashed rgba(44,76,59,0.08);
+}
+.result-metric:last-child { border-bottom: none; }
+
+.metric-label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--color-text-light, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+}
+.metric-label i { color: var(--color-accent-dark); font-size: 0.95rem; }
+.metric-value {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.7rem;
+    color: var(--color-primary);
+    line-height: 1.1;
+}
+.metric-value.metric-gold { color: var(--color-accent-dark); }
+.metric-unit {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #888);
+    margin-left: 0.2rem;
+}
+
+/* Pulso sutil al recalcular (clase añadida por JS) */
+@keyframes metricPulse {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+.metric-value.metric-animate {
+    animation: metricPulse 0.45s ease-out;
+    transform-origin: left center;
+}
+
+/* Resumen inferior de parámetros */
+.results-summary {
+    background: var(--color-bg-alt);
+    padding: 1.2rem 2rem 1.5rem;
+    border-top: 1px solid rgba(44,76,59,0.06);
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+}
+.summary-label { color: var(--color-text-muted, #888); }
+.summary-value {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+.summary-divider {
+    height: 1px;
+    background: rgba(44,76,59,0.08);
+    margin: 0;
+}
+
+/* ── Sección informativa inferior ("¿en qué se basa?") ─────────────────── */
+.info-section {
+    padding: 4rem 0;
+    background: var(--color-bg-alt);
+}
+.info-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.8rem;
+    height: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-spring);
+    border: 1px solid rgba(44,76,59,0.05);
+}
+.info-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(212,175,55,0.3);
+}
+.info-card-icon {
+    width: 60px; height: 60px;
+    margin: 0 auto 1.2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 100%);
+    color: var(--color-accent-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+.info-card h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    margin: 0 0 0.6rem;
+}
+.info-card p {
+    color: var(--color-text-light, #666);
+    font-size: 0.92rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* ── Footer compacto de la calculadora ─────────────────────────────────── */
+.calc-footer {
+    background: var(--color-primary-dark);
+    color: rgba(255,255,255,0.8);
+    padding: 1.5rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+}
+.calc-footer a {
+    color: var(--color-accent-light);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+.calc-footer a:hover { color: var(--color-accent); text-decoration: underline; }
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 991.98px) {
+    .results-card { position: static; margin-top: 1.5rem; }
+    .page-hero    { padding: 4.5rem 0 3rem; }
+}
+
+
+/* ==========================================================================
+   TIENDA ONLINE  —  tienda.php
+   --------------------------------------------------------------------------
+   Clases que faltaban tras la refactorización: hero mini, filtros,
+   catálogo vacío, badges por variedad, indicador de stock, botón "Añadir".
+   El .product-card base ya existe arriba (sección 10); aquí lo extendemos.
+   Decisión cromática: hero oscuro (verde oliva) para que la navbar blanca
+   por defecto quede legible sin depender del estado scrolled.
+   ========================================================================== */
+
+/* ── Hero mini (cabecera compacta de la tienda) ─────────────────────────── */
+.hero-mini {
+    position: relative;
+    padding: 7rem 0 4rem;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(212,175,55,0.10), transparent 50%),
+        linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+    color: #fff;
+    overflow: hidden;
+    text-align: center;
+}
+.hero-mini::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+}
+.hero-mini-content { position: relative; z-index: 2; }
+.hero-mini h1 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    margin: 0.8rem 0 1rem;
+    line-height: 1.15;
+}
+.hero-mini h1 em {
+    color: var(--color-accent);
+    font-style: italic;
+}
+.hero-mini p {
+    max-width: 620px;
+    margin: 0 auto;
+    color: rgba(255,255,255,0.8);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+/* ── Filtros por variedad (pills) ───────────────────────────────────────── */
+.filtros-section {
+    background: var(--color-bg);
+    padding: 2rem 0 1rem;
+    border-bottom: 1px solid rgba(44,76,59,0.06);
+}
+.filtros-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+}
+.filtro-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.2rem;
+    background: #fff;
+    border: 1.5px solid rgba(44,76,59,0.15);
+    color: var(--color-text-light, #555);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+.filtro-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent-dark);
+    transform: translateY(-1px);
+}
+.filtro-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ── Grid del catálogo ──────────────────────────────────────────────────── */
+.productos-grid {
+    padding: 3rem 0 5rem;
+    background: var(--color-bg);
+}
+
+/* Estado vacío (ningún producto en BD) */
+.catalogo-vacio {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--color-text-muted, #888);
+}
+.catalogo-vacio i {
+    font-size: 3.5rem;
+    color: rgba(44,76,59,0.25);
+    display: block;
+    margin-bottom: 1rem;
+}
+.catalogo-vacio h3 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Badge de variedad superpuesto a la imagen ──────────────────────────── */
+.product-badge-variedad {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(44,76,59,0.9);
+    color: #fff;
+    backdrop-filter: blur(8px);
+}
+/* Variantes por cultivar (un color distinto ayuda a escanear el catálogo) */
+.badge-Picual      { background: linear-gradient(135deg, #2C4C3B, #1E3529); color: #fff; }
+.badge-Arbequina   { background: linear-gradient(135deg, #D4AF37, #B8962E); color: #1A1A1A; }
+.badge-Hojiblanca  { background: linear-gradient(135deg, #5A7A5F, #3A6150); color: #fff; }
+.badge-Coupage     { background: linear-gradient(135deg, #8B5A2B, #6B4220); color: #fff; }
+.badge-Cornicabra  { background: linear-gradient(135deg, #4A5D3B, #33422A); color: #fff; }
+
+/* ── Indicador de stock (puntito + texto) ───────────────────────────────── */
+.stock-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #888);
+    margin: 0.5rem 0 1rem;
+    font-weight: 500;
+}
+.stock-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #2D8B4E;
+    box-shadow: 0 0 0 3px rgba(45,139,78,0.15);
+}
+.stock-info.stock-ok    { color: #2D8B4E; }
+.stock-info.stock-bajo  { color: #C0392B; font-weight: 600; }
+.stock-info.stock-bajo .stock-dot {
+    background: #C0392B;
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.18);
+    animation: stockPulse 1.6s ease-in-out infinite;
+}
+.stock-info.stock-agotado { color: #6C757D; }
+.stock-info.stock-agotado .stock-dot {
+    background: #6C757D;
+    box-shadow: 0 0 0 3px rgba(108,117,125,0.15);
+}
+@keyframes stockPulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(192,57,43,0.18); }
+    50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0.05); }
+}
+
+/* ── Badge "Agotado" superpuesto + tarjeta agotada ──────────────────────── */
+.product-badge-agotado {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(192,57,43,0.95);
+    color: #fff;
+    backdrop-filter: blur(6px);
+}
+.product-card.is-agotado .product-card-img img {
+    filter: grayscale(0.7) opacity(0.7);
+}
+.product-card.is-agotado .btn-add-cart[disabled] {
+    background: #E9ECEF;
+    color: #6C757D;
+    border-color: #DEE2E6;
+    cursor: not-allowed;
+}
+.product-card.is-agotado .btn-add-cart[disabled]:hover {
+    background: #E9ECEF;
+    transform: none;
+}
+
+/* ── Botón "Añadir al carrito" (pill dorado) ────────────────────────────── */
+.btn-add-cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    background: var(--color-accent);
+    color: var(--color-text);
+    border: 1.5px solid var(--color-accent);
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-gold);
+}
+.btn-add-cart:hover:not(:disabled) {
+    background: var(--color-accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(212, 175, 55, 0.35);
+}
+.btn-add-cart:disabled {
+    opacity: 0.7;
+    cursor: wait;
+    transform: none;
+}
+
+
+/* ==========================================================================
+   CONFIRMACIÓN DE COMPRA  —  exito.php
+   --------------------------------------------------------------------------
+   Pantalla post-checkout. Tras el commit de procesar_compra.php aterrizamos
+   aquí con la info mínima del pedido. El CTA principal es descargar la
+   factura en PDF; el secundario, seguir comprando.
+   ========================================================================== */
+.exito-card {
+    max-width: 560px;
+    margin: 7rem auto 4rem;
+    padding: 3rem 2.5rem;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    border-top: 4px solid var(--color-accent);
+}
+
+/* Círculo verde con el check grande */
+.check-icon {
+    width: 84px; height: 84px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2D8B4E, #1E6836);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    box-shadow: 0 8px 24px rgba(45,139,78,0.25);
+    animation: checkPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes checkPop {
+    0%   { transform: scale(0);   opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.exito-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 2rem;
+    margin: 0 0 0.6rem;
+}
+.exito-subtitle {
+    color: var(--color-text-light, #555);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Caja con los datos del pedido */
+.datos-pedido {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-md);
+    padding: 1.3rem 1.6rem;
+    margin: 0 auto 1.8rem;
+    max-width: 420px;
+    text-align: left;
+}
+.dato {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+}
+.dato-label {
+    color: var(--color-text-muted, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.dato-valor {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* CTA principal: descargar factura (píldora dorada) */
+.btn-factura {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.8rem;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+    color: var(--color-text);
+    border: none;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    box-shadow: var(--shadow-gold);
+    transition: var(--transition-base);
+    margin-bottom: 0.8rem;
+}
+.btn-factura:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(212,175,55,0.4);
+    color: var(--color-text);
+}
+
+/* CTA secundario: seguir comprando (enlace sobrio) */
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+.btn-volver:hover {
+    color: var(--color-accent-dark);
+    transform: translateX(-4px);
+}
+
+
+/* ==========================================================================
+   VOTACIONES (vista del socio)  —  votaciones.php
+   --------------------------------------------------------------------------
+   Tarjetas para cada votación (abierta o cerrada). En las abiertas, formulario
+   de radio buttons elegantes. En las cerradas, barras de resultados con la
+   ganadora destacada en dorado y un badge de quórum.
+   ========================================================================== */
+
+.votaciones-main { padding-top: 7rem; padding-bottom: 4rem; max-width: 880px; }
+
+.votaciones-header { text-align: center; margin-bottom: 2.5rem; }
+.votaciones-header h1 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    margin: .8rem 0 .8rem;
+}
+.votaciones-header h1 em { color: var(--color-accent-dark); font-style: italic; }
+.votaciones-header p { color: var(--color-text-light, #555); font-size: 1rem; max-width: 580px; margin: 0 auto; }
+
+/* ── Tarjeta de votación ────────────────────────────────────────────────── */
+.votacion-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border-left: 4px solid var(--color-accent);
+    transition: var(--transition-base);
+}
+.votacion-card:hover { box-shadow: var(--shadow-lg); }
+.votacion-cerrada { border-left-color: rgba(44, 76, 59, 0.3); }
+
+.votacion-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: .75rem;
+}
+.votacion-card-header h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    margin: .35rem 0 0;
+}
+
+.votacion-estado-badge {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .3rem .8rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+.votacion-estado-badge.abierta { background: rgba(45,139,78,.15); color: #1E6836; }
+.votacion-estado-badge.abierta i { color: #2D8B4E; animation: pulsoVerde 2s ease-in-out infinite; }
+.votacion-estado-badge.cerrada { background: rgba(44,76,59,.10); color: var(--color-primary); }
+@keyframes pulsoVerde {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .4; }
+}
+
+.votacion-fechas {
+    color: var(--color-text-muted, #888);
+    font-size: .82rem;
+    text-align: right;
+}
+
+.votacion-desc {
+    color: var(--color-text-light, #555);
+    font-size: .95rem;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Formulario de voto (radios estilizados) ────────────────────────────── */
+.votacion-form fieldset { border: none; padding: 0; margin: 0 0 1rem; }
+.votacion-opcion {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .9rem 1rem;
+    margin-bottom: .55rem;
+    border: 2px solid rgba(44,76,59,.10);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    background: var(--color-bg);
+}
+.votacion-opcion:hover { border-color: var(--color-accent); background: #fff; }
+.votacion-opcion input[type=radio] {
+    appearance: none;
+    width: 22px; height: 22px;
+    border: 2px solid rgba(44,76,59,.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition-base);
+}
+.votacion-opcion input[type=radio]:checked {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 3px rgba(44,76,59,.15);
+}
+.votacion-opcion:has(input:checked) {
+    border-color: var(--color-primary);
+    background: #fff;
+}
+.votacion-opcion span {
+    font-family: var(--font-body);
+    font-size: .95rem;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.btn-emitir-voto {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .8rem 1.8rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    cursor: pointer;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+.btn-emitir-voto:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+}
+.btn-emitir-voto:disabled { opacity: .65; cursor: wait; transform: none; }
+
+.votacion-aviso {
+    margin: .9rem 0 0;
+    color: var(--color-text-muted, #888);
+    font-size: .82rem;
+    display: flex; align-items: center; gap: .35rem;
+}
+
+/* ── Confirmación tras votar ────────────────────────────────────────────── */
+.votacion-confirmacion {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
+    background: linear-gradient(135deg, rgba(45,139,78,.08), rgba(45,139,78,.03));
+    border-left: 3px solid #2D8B4E;
+    border-radius: var(--radius-md);
+}
+.votacion-confirmacion i {
+    font-size: 1.8rem;
+    color: #2D8B4E;
+    flex-shrink: 0;
+}
+.votacion-confirmacion strong { color: var(--color-primary); }
+.votacion-confirmacion small  { color: var(--color-text-muted, #888); font-size: .82rem; }
+
+/* ── Resultados (votaciones cerradas) ───────────────────────────────────── */
+.votacion-resultados { padding-top: .5rem; }
+.votacion-quorum {
+    padding: .9rem 1.2rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+.votacion-quorum.ok {
+    background: rgba(45,139,78,.10);
+    border-left: 3px solid #2D8B4E;
+}
+.votacion-quorum.ok strong { color: #1E6836; }
+.votacion-quorum.ko {
+    background: rgba(192,57,43,.08);
+    border-left: 3px solid #C0392B;
+}
+.votacion-quorum.ko strong { color: #C0392B; }
+.votacion-quorum span { font-size: .82rem; color: var(--color-text-light, #555); }
+
+.votacion-resultados-lista { list-style: none; padding: 0; margin: 0; }
+.votacion-resultados-lista li {
+    margin-bottom: .9rem;
+    padding: .6rem .8rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-base);
+}
+.votacion-resultados-lista li.ganadora {
+    background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(212,175,55,.04));
+    border-left: 3px solid var(--color-accent);
+}
+.resultado-fila {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: .35rem;
+    font-size: .9rem;
+}
+.resultado-texto { color: var(--color-text); font-weight: 500; }
+.resultado-numero { color: var(--color-text-muted, #888); font-size: .82rem; }
+.resultado-barra {
+    height: 8px;
+    background: rgba(44,76,59,.06);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.resultado-barra > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 999px;
+    transition: width .8s cubic-bezier(.34, 1.56, .64, 1);
+}
+.votacion-resultados-lista li.ganadora .resultado-barra > span {
+    background: linear-gradient(90deg, var(--color-accent-dark), var(--color-accent-light));
+}
+
+/* Estado vacío */
+.votacion-vacia {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: var(--color-text-muted, #888);
+}
+.votacion-vacia i { font-size: 3.5rem; opacity: .25; display: block; margin-bottom: 1rem; color: var(--color-primary); }
+
+
+/* ==========================================================================
+   VOTACIONES (vista admin) — partes que viven en admin.css ya, aquí solo
+   las que aparecen en admin_votaciones.php para socios futuros / form de
+   creación con +/- opciones.
+   ========================================================================== */
+
+.opcion-row {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    align-items: center;
+}
+.opcion-row .admin-input { flex: 1; }
+.btn-quitar-opcion {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(192,57,43,.25);
+    background: #fff;
+    color: #C0392B;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+.btn-quitar-opcion:hover {
+    background: #C0392B;
+    color: #fff;
+    border-color: #C0392B;
+}
+.btn-anadir-opcion {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1.5px dashed rgba(44,76,59,.3);
+    border-radius: var(--radius-md);
+    padding: .55rem 1rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .82rem;
+    cursor: pointer;
+    transition: var(--transition-base);
+    margin-top: .3rem;
+}
+.btn-anadir-opcion:hover:not(:disabled) {
+    background: rgba(44,76,59,.05);
+    border-color: var(--color-primary);
+}
+.btn-anadir-opcion:disabled { opacity: .4; cursor: not-allowed; }
+
+
+/* ── Medidor de quórum (admin_votacion_resultados.php) ──────────────────── */
+.quorum-card { padding: 1.3rem 1.4rem; }
+.quorum-meter { margin: .6rem 0 .8rem; }
+.quorum-meter-track {
+    position: relative;
+    height: 14px;
+    background: rgba(44,76,59,.08);
+    border-radius: 999px;
+    overflow: visible;
+}
+.quorum-meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 999px;
+    transition: width 1s cubic-bezier(.34, 1.56, .64, 1);
+}
+.quorum-card.quorum-ok .quorum-meter-fill {
+    background: linear-gradient(90deg, #2D8B4E, #5BC07D);
+}
+.quorum-card.quorum-ko .quorum-meter-fill {
+    background: linear-gradient(90deg, #E67E22, #F39C12);
+}
+.quorum-meter-mark {
+    position: absolute;
+    top: -4px;
+    width: 3px;
+    height: 22px;
+    background: var(--color-accent-dark);
+    border-radius: 2px;
+    transform: translateX(-50%);
+}
+.quorum-meter-mark::after {
+    content: 'min';
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .65rem;
+    font-weight: 600;
+    color: var(--color-accent-dark);
+    text-transform: uppercase;
+}
+.quorum-pct {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--color-primary);
+    text-align: right;
+    margin-top: .4rem;
+}
+.quorum-status {
+    display: flex; align-items: center; gap: .35rem;
+    font-size: .85rem;
+    font-weight: 600;
+}
+.quorum-card.quorum-ok .quorum-status { color: #1E6836; }
+.quorum-card.quorum-ko .quorum-status { color: #C0392B; }
+
+
+/* ==========================================================================
+   MODAL DE RESERVA DE VISITA  —  index.php
+   --------------------------------------------------------------------------
+   Estética coherente con el resto del sitio. Form con grid Bootstrap,
+   inputs con focus en verde corporativo, radios "tarjeta" para el tipo de
+   experiencia.
+   ========================================================================== */
+
+.reserva-modal-content {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    border: none;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+}
+.reserva-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: #fff;
+    padding: 1.4rem 1.8rem;
+    border-bottom: 3px solid var(--color-accent);
+}
+.reserva-modal-brand {
+    display: flex; align-items: center; gap: .7rem;
+}
+.reserva-modal-brand .brand-icon { font-size: 1.5rem; }
+.reserva-modal-brand h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0;
+}
+.reserva-modal-header .btn-close-modal {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex; align-items: center; justify-content: center;
+}
+.reserva-modal-header .btn-close-modal:hover { background: rgba(255,255,255,.25); }
+
+.reserva-modal-body { padding: 1.8rem 2rem 2rem; }
+.reserva-intro {
+    color: var(--color-text-light, #555);
+    font-size: .92rem;
+    line-height: 1.55;
+    margin-bottom: 1.4rem;
+}
+
+.reserva-label {
+    display: flex; align-items: center; gap: .35rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .8rem;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .35rem;
+}
+.reserva-label i { color: var(--color-accent-dark); }
+.reserva-label .opcional {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-text-muted, #888);
+    margin-left: .25rem;
+}
+.reserva-input {
+    width: 100%;
+    padding: .7rem .9rem;
+    font-family: var(--font-body);
+    font-size: .92rem;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 1.5px solid rgba(44,76,59,.15);
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+    appearance: none;
+}
+.reserva-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(44,76,59,.12);
+}
+.reserva-input:hover { border-color: rgba(44,76,59,.35); }
+
+.reserva-hint {
+    display: block;
+    margin-top: .35rem;
+    font-size: .75rem;
+    color: var(--color-text-muted, #888);
+}
+.reserva-hint i { color: var(--color-accent-dark); margin-right: .15rem; }
+
+/* Radios estilo "tarjeta" para el tipo de experiencia */
+.reserva-radios {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .6rem;
+    margin-top: .25rem;
+}
+@media (min-width: 768px) {
+    .reserva-radios { grid-template-columns: 1fr 1fr 1fr; }
+}
+.reserva-radio {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .8rem;
+    border: 1.5px solid rgba(44,76,59,.15);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    background: var(--color-bg);
+}
+.reserva-radio:hover { border-color: var(--color-accent); }
+.reserva-radio:has(input:checked) {
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(44,76,59,.10);
+}
+.reserva-radio input[type=radio] {
+    appearance: none;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(44,76,59,.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.reserva-radio input[type=radio]:checked {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    box-shadow: inset 0 0 0 3px #fff;
+}
+.reserva-radio strong {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .88rem;
+    color: var(--color-text);
+}
+.reserva-radio span {
+    display: block;
+    font-size: .78rem;
+    color: var(--color-text-muted, #888);
+    margin-top: .1rem;
+    line-height: 1.45;
+}
+
+/* Botón principal del form */
+.btn-reservar-submit {
+    margin-top: 1.4rem;
+    width: 100%;
+    padding: .9rem 1.5rem;
+    font-size: .95rem;
+}
+
+
+/* ==========================================================================
+   PANEL DEL SOCIO  —  panel_socio.php
+   --------------------------------------------------------------------------
+   Dashboard de aterrizaje del socio. La pieza central es el widget
+   agro-meteorológico (consume Open-Meteo vía PHP proxy y da recomendación
+   de recolección). A la derecha mini-stats y accesos rápidos.
+   ========================================================================== */
+
+.panel-socio-main { padding-top: 7rem; padding-bottom: 4rem; }
+
+.panel-socio-header { text-align: center; margin-bottom: 2.5rem; }
+.panel-socio-header h1 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    margin: .8rem 0 .8rem;
+}
+.panel-socio-header h1 em { color: var(--color-accent-dark); font-style: italic; }
+.panel-socio-header p { color: var(--color-text-light, #555); font-size: 1rem; max-width: 580px; margin: 0 auto; }
+
+/* ── Widget agro-meteorológico ──────────────────────────────────────────── */
+.agro-card {
+    background: linear-gradient(180deg, #fff 0%, #FDFBF7 100%);
+    border-radius: var(--radius-lg);
+    padding: 1.6rem 1.7rem;
+    box-shadow: var(--shadow-md);
+    border-top: 4px solid var(--color-accent);
+}
+.agro-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+.agro-eyebrow {
+    display: inline-flex; align-items: center; gap: .35rem;
+    color: var(--color-accent-dark);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+.agro-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    margin: .25rem 0 0;
+}
+.agro-refresh {
+    background: rgba(44,76,59,.08);
+    border: none;
+    color: var(--color-primary);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.agro-refresh:hover { background: rgba(44,76,59,.16); }
+.agro-refresh.rotando i { animation: spinAgro 1s linear infinite; }
+@keyframes spinAgro { to { transform: rotate(360deg); } }
+
+/* ── Tarjeta de RECOMENDACIÓN (la pieza protagonista) ─────────────────── */
+.agro-recomendacion {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.2rem 1.4rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.4rem;
+    transition: background .3s, border-color .3s;
+    border-left: 4px solid #ccc;
+    background: #f0f0f0;
+}
+.agro-recomendacion.nivel-bueno {
+    background: linear-gradient(135deg, rgba(45,139,78,.10), rgba(45,139,78,.02));
+    border-left-color: #2D8B4E;
+}
+.agro-recomendacion.nivel-precaucion {
+    background: linear-gradient(135deg, rgba(212,175,55,.15), rgba(212,175,55,.04));
+    border-left-color: var(--color-accent);
+}
+.agro-recomendacion.nivel-malo {
+    background: linear-gradient(135deg, rgba(192,57,43,.10), rgba(192,57,43,.02));
+    border-left-color: #C0392B;
+}
+.agro-recomendacion.nivel-error {
+    background: rgba(192,57,43,.05);
+    border-left-color: #C0392B;
+}
+.agro-recomendacion-icono {
+    font-size: 2.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.agro-rec-titulo {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    margin-bottom: .25rem;
+}
+.agro-recomendacion.nivel-malo  .agro-rec-titulo { color: #C0392B; }
+.agro-recomendacion.nivel-bueno .agro-rec-titulo { color: #1E6836; }
+.agro-rec-mensaje {
+    font-size: .9rem;
+    color: var(--color-text-light, #555);
+    line-height: 1.5;
+}
+
+/* ── Tarjetas diarias (5 días) ─────────────────────────────────────────── */
+.agro-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .55rem;
+    margin-bottom: 1rem;
+}
+@media (max-width: 580px) {
+    .agro-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.agro-dia {
+    background: #fff;
+    border: 1px solid rgba(44,76,59,.08);
+    border-radius: var(--radius-md);
+    padding: .85rem .5rem;
+    text-align: center;
+    transition: var(--transition-base);
+}
+.agro-dia:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    border-color: rgba(212,175,55,.4);
+}
+.agro-dia-fecha {
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--color-text-muted, #888);
+    margin-bottom: .35rem;
+}
+.agro-dia-icono { font-size: 1.6rem; line-height: 1; margin: .2rem 0; }
+.agro-dia-temp {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    align-items: baseline;
+    margin: .35rem 0;
+}
+.agro-dia-temp .t-max {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--color-primary);
+}
+.agro-dia-temp .t-min {
+    font-size: .8rem;
+    color: var(--color-text-muted, #888);
+}
+.agro-dia-meta {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    font-size: .7rem;
+    color: var(--color-text-muted, #888);
+    margin-top: .35rem;
+}
+.agro-dia-meta i { color: var(--color-accent-dark); margin-right: .15rem; }
+
+/* Skeleton mientras carga */
+.agro-skeleton {
+    height: 130px;
+    background: linear-gradient(90deg, rgba(44,76,59,.04) 25%, rgba(44,76,59,.10) 50%, rgba(44,76,59,.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmerAgro 1.5s ease-in-out infinite;
+    border: none;
+}
+@keyframes shimmerAgro {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.agro-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: .72rem;
+    color: var(--color-text-muted, #888);
+    padding-top: .8rem;
+    border-top: 1px solid rgba(44,76,59,.06);
+}
+
+/* ── Mini-stats (lado derecho) ─────────────────────────────────────────── */
+.mini-stat {
+    background: #fff;
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+    height: 100%;
+}
+.mini-stat:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.mini-stat-num {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--color-primary);
+    line-height: 1;
+}
+.mini-stat-lbl {
+    font-size: .72rem;
+    color: var(--color-text-muted, #888);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-top: .35rem;
+    font-weight: 600;
+}
+.mini-stat-alert {
+    background: linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04));
+    border: 1.5px solid var(--color-accent);
+}
+.mini-stat-alert .mini-stat-num { color: var(--color-accent-dark); }
+
+/* ── Tarjetas de acceso rápido ─────────────────────────────────────────── */
+.quick-access {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .9rem 1rem;
+    background: #fff;
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+    border-left: 3px solid transparent;
+}
+.quick-access:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text);
+    border-left-color: var(--color-accent);
+}
+.quick-access > i:first-child {
+    font-size: 1.4rem;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+.quick-access > div { flex: 1; }
+.quick-access strong {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .92rem;
+    color: var(--color-text);
+}
+.quick-access span {
+    display: block;
+    font-size: .78rem;
+    color: var(--color-text-muted, #888);
+    margin-top: .1rem;
+}
+.quick-access > i:last-child {
+    color: var(--color-accent-dark);
+    opacity: .6;
+    transition: var(--transition-base);
+}
+.quick-access:hover > i:last-child {
+    opacity: 1;
+    transform: translateX(3px);
+}
+.quick-access.destacado {
+    border-left-color: var(--color-accent);
+    background: linear-gradient(135deg, rgba(212,175,55,.08), #fff);
+}
+
+
+
+/* ==========================================================================
+   CTA "ver más en la tienda" en la home (index.php)
+   --------------------------------------------------------------------------
+   Aparece debajo del grid de los 3 productos destacados, cuando el catálogo
+   real tiene más variedades. Cierra el bucle visual: "estos son los
+   destacados → aquí están todos los demás".
+   ========================================================================== */
+.cta-tienda-mas {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    margin: 3rem auto 0;
+    max-width: 880px;
+    padding: 1.7rem 2rem;
+    background: linear-gradient(135deg, #fff 0%, var(--color-bg-alt) 100%);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--color-accent);
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+}
+.cta-tienda-mas:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.cta-tienda-mas-icono {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.04));
+    color: var(--color-accent-dark);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    flex-shrink: 0;
+}
+.cta-tienda-mas-texto { flex: 1 1 280px; }
+.cta-tienda-mas-eyebrow {
+    margin: 0 0 .25rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--color-accent-dark);
+}
+.cta-tienda-mas h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    line-height: 1.3;
+    margin: 0 0 .35rem;
+}
+.cta-tienda-mas h3 strong {
+    color: var(--color-accent-dark);
+    font-weight: 700;
+}
+.cta-tienda-mas-texto > p {
+    margin: 0;
+    color: var(--color-text-light, #555);
+    font-size: .92rem;
+    line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+    .cta-tienda-mas { padding: 1.4rem; gap: 1rem; }
+    .cta-tienda-mas .btn-gold { width: 100%; justify-content: center; }
+}
+
+
+/* ==========================================================================
+   MIS ENTREGAS  —  mis_entregas.php (vista del socio)
+   --------------------------------------------------------------------------
+   Tabla con histórico personal de aportaciones de aceituna + descarga PDF.
+   ========================================================================== */
+.mis-entregas-main { padding-top: 7rem; padding-bottom: 4rem; }
+
+.mis-entregas-header { text-align: center; margin-bottom: 2rem; }
+.mis-entregas-header h1 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    margin: .8rem 0 .8rem;
+}
+.mis-entregas-header h1 em { color: var(--color-accent-dark); font-style: italic; }
+.mis-entregas-header p {
+    color: var(--color-text-light, #555);
+    font-size: 1rem;
+    max-width: 580px;
+    margin: 0 auto;
+}
+
+.entregas-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border-top: 4px solid var(--color-primary);
+}
+.entregas-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 1.4rem;
+    background: var(--color-bg-alt);
+    border-bottom: 1px solid rgba(44,76,59,.08);
+}
+.entregas-card-header h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.15rem;
+    margin: 0;
+    display: inline-block;
+}
+.entregas-card-header > div > i { color: var(--color-accent-dark); margin-right: .35rem; }
+
+.entregas-tabla thead {
+    background: rgba(44,76,59,.04);
+}
+.entregas-tabla thead th {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--color-primary);
+    padding: .85rem 1rem;
+    border: none;
+}
+.entregas-tabla tbody td {
+    padding: .85rem 1rem;
+    vertical-align: middle;
+    border-color: rgba(44,76,59,.06);
+}
+.entregas-tabla tbody tr:hover { background: rgba(212,175,55,.04); }
+
+.codigo-albaran {
+    background: var(--color-bg-alt);
+    color: var(--color-primary);
+    padding: .15rem .55rem;
+    border-radius: 4px;
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+.badge-rendimiento {
+    display: inline-block;
+    padding: .25rem .65rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+}
+.badge-rendimiento.badge-alto  { background: rgba(45,139,78,.15);  color: #1E6836; }
+.badge-rendimiento.badge-medio { background: rgba(212,175,55,.15); color: var(--color-accent-dark); }
+.badge-rendimiento.badge-bajo  { background: rgba(192,57,43,.10);  color: #C0392B; }
+
+/* Botón PDF "pequeño" — coherente con el resto de píldoras del sitio */
+.btn-pdf-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .35rem .75rem;
+    background: var(--color-primary);
+    color: #fff;
+    border: 1.5px solid var(--color-primary);
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+.btn-pdf-mini:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text);
+    transform: translateY(-1px);
+}
+.btn-pdf-mini i { font-size: .9rem; }
+
+/* Columna "Justificante" anclada a la derecha: con 8 columnas y muchas
+   filas (campañas con histórico amplio) la tabla desborda el viewport y
+   el botón PDF queda fuera. Hacerla sticky garantiza que la acción de
+   descarga siempre esté accesible sin que el usuario tenga que hacer
+   scroll horizontal para encontrarla. */
+.entregas-tabla thead th:last-child,
+.entregas-tabla tbody td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    box-shadow: -6px 0 10px -6px rgba(0, 0, 0, .08);
+    min-width: 96px;
+}
+.entregas-tabla thead th:last-child {
+    background: #f3f1ea;
+}
+.entregas-tabla tbody td:last-child {
+    background: #fff;
+}
+.entregas-tabla tbody tr:hover td:last-child {
+    background: #faf6e8;
+}
+
+.entregas-vacio {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--color-text-muted, #888);
+}
+.entregas-vacio i {
+    font-size: 3rem;
+    color: rgba(44,76,59,.25);
+    display: block;
+    margin-bottom: 1rem;
+}
+.entregas-vacio p { margin: 0; line-height: 1.55; font-size: .95rem; }
+
+.entregas-pie {
+    font-size: .82rem;
+}
+.entregas-pie i { color: var(--color-accent-dark); }
+
+
+/* ==========================================================================
+   TABLÓN DE NOTICIAS — Listado y detalle
+   ========================================================================== */
+
+.noticias-main { padding-top: 2rem; padding-bottom: 4rem; }
+.noticias-header { text-align: center; margin: 1rem auto 2rem; max-width: 720px; }
+.noticias-header .hero-label { display:inline-flex; align-items:center; gap:.4rem;
+    color: var(--color-accent-dark); font-weight: 600; font-size: .8rem;
+    text-transform: uppercase; letter-spacing: .12em; }
+.noticias-header h1 { font-family: var(--font-heading); font-size: 2.4rem; margin: .4rem 0; color: var(--color-primary-dark); }
+.noticias-header h1 em { color: var(--color-accent-dark); font-style: italic; }
+.noticias-header p { color: var(--color-text-muted); font-size: 1rem; }
+
+.noticias-filtros { display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; }
+.filtro-noticia { display:inline-flex; align-items:center; gap:.4rem;
+    padding: .45rem .9rem; border-radius: 999px; font-size:.85rem;
+    text-decoration:none; color: var(--color-text); background: #fff;
+    border: 1px solid rgba(0,0,0,0.08); transition: all .2s; }
+.filtro-noticia:hover { background: rgba(212,175,55,0.1); border-color: var(--color-accent); }
+.filtro-noticia.active { background: var(--color-primary); color:#fff; border-color: var(--color-primary); }
+
+.noticia-card { position:relative; background:#fff; border-radius: 14px;
+    padding: 1.5rem; height: 100%; border:1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: transform .2s, box-shadow .2s; }
+.noticia-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+.noticia-destacada { border: 2px solid var(--color-accent);
+    background: linear-gradient(135deg, #fffef9 0%, #fff 60%); }
+.noticia-pin { position:absolute; top: -10px; right: 1.5rem;
+    background: var(--color-accent); color: var(--color-text);
+    padding: .2rem .7rem; border-radius: 999px; font-size:.7rem; font-weight:700;
+    text-transform: uppercase; letter-spacing: .05em; }
+.noticia-meta { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+    font-size: .75rem; margin-bottom: .75rem; }
+.noticia-fecha { color: var(--color-text-muted); margin-left:auto;
+    display:inline-flex; align-items:center; gap:.3rem; }
+.noticia-titulo { font-family: var(--font-heading); font-size: 1.4rem; margin: 0 0 .6rem;
+    line-height: 1.25; }
+.noticia-titulo a { color: var(--color-primary-dark); text-decoration: none; }
+.noticia-titulo a:hover { color: var(--color-accent-dark); }
+.noticia-extracto { color: var(--color-text-muted); font-size:.92rem; line-height: 1.55;
+    margin-bottom: 1rem; }
+.noticia-footer { display:flex; align-items:center; justify-content:space-between;
+    padding-top: .75rem; border-top: 1px solid rgba(0,0,0,0.06); font-size:.8rem; }
+.noticia-autor { color: var(--color-text-muted); display:inline-flex; gap:.35rem; }
+.noticia-leer-mas { color: var(--color-accent-dark); font-weight:600; text-decoration:none;
+    display:inline-flex; align-items:center; gap:.35rem; }
+.noticia-leer-mas:hover { gap:.55rem; }
+
+.noticias-vacio { text-align:center; padding: 4rem 1rem; color: var(--color-text-muted); }
+.noticias-vacio i { font-size: 4rem; color: rgba(0,0,0,0.15); display:block; margin-bottom: 1rem; }
+
+/* Detalle */
+.noticia-detalle { max-width: 760px; margin: 0 auto; background:#fff;
+    border-radius: 14px; padding: 2.5rem; border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+.noticia-detalle-meta { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
+    margin-bottom: 1rem; font-size:.8rem; color: var(--color-text-muted); }
+.noticia-detalle-titulo { font-family: var(--font-heading); font-size: 2.2rem;
+    color: var(--color-primary-dark); margin: 0 0 1rem; line-height: 1.2; }
+.noticia-detalle-resumen { font-size: 1.1rem; color: var(--color-text-muted);
+    font-style: italic; margin-bottom: 1.5rem; padding-left: 1rem;
+    border-left: 3px solid var(--color-accent); }
+.noticia-detalle-cuerpo p { font-size: 1rem; line-height: 1.7; margin-bottom: 1rem; }
+
+.noticia-sugerida { display:block; background:#fff; padding: 1rem; border-radius: 10px;
+    border:1px solid rgba(0,0,0,0.06); text-decoration: none; color: var(--color-text);
+    transition: all .2s; height:100%; }
+.noticia-sugerida:hover { border-color: var(--color-accent); transform: translateY(-2px); }
+.noticia-sugerida strong { display:block; color: var(--color-primary-dark);
+    font-family: var(--font-heading); }
+
+
+/* ==========================================================================
+   CALENDARIO AGRÍCOLA — Rejilla 12 meses
+   ========================================================================== */
+
+.calendario-main { padding-top: 2rem; padding-bottom: 4rem; }
+.calendario-header { text-align: center; margin: 1rem auto 2rem; max-width: 760px; }
+.calendario-header .hero-label { display:inline-flex; align-items:center; gap:.4rem;
+    color: var(--color-accent-dark); font-weight: 600; font-size: .8rem;
+    text-transform: uppercase; letter-spacing: .12em; }
+.calendario-header h1 { font-family: var(--font-heading); font-size: 2.4rem; margin: .4rem 0; color: var(--color-primary-dark); }
+.calendario-header h1 em { color: var(--color-accent-dark); font-style: italic; }
+.calendario-header p { color: var(--color-text-muted); font-size: 1rem; }
+
+.calendario-nav { display:flex; gap:.4rem; flex-wrap:wrap; justify-content:center;
+    margin-bottom: 1.5rem; padding: .75rem; background:#fff;
+    border-radius: 12px; border:1px solid rgba(0,0,0,0.05); }
+.cal-nav-link { display:inline-flex; flex-direction:column; align-items:center;
+    gap: 1px; min-width: 50px; padding: .35rem .55rem; border-radius: 8px;
+    text-decoration: none; color: var(--color-text-muted);
+    border: 1px solid transparent; transition: all .15s; font-size: .7rem; }
+.cal-nav-link:hover { background: rgba(212,175,55,0.1); color: var(--color-accent-dark); }
+.cal-nav-num { font-weight: 700; font-size: 1rem; color: var(--color-primary); }
+.cal-nav-name { text-transform: uppercase; letter-spacing: .08em; }
+.cal-nav-actual { background: var(--color-primary); color: #fff !important; border-color: var(--color-primary); }
+.cal-nav-actual .cal-nav-num { color: var(--color-accent); }
+.cal-nav-actual:hover { background: var(--color-primary-dark); color: #fff !important; }
+
+.cal-mes-actual-banner { display:flex; align-items:center; gap:.75rem; }
+.cal-mes-actual-banner i.bi-stars { font-size: 1.5rem; color: var(--color-accent-dark); }
+
+.calendario-grid { display: grid; gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
+.cal-mes-card { background:#fff; border:1px solid rgba(0,0,0,0.05); border-radius: 14px;
+    padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03); scroll-margin-top: 90px; }
+.cal-mes-actual { border: 2px solid var(--color-accent);
+    background: linear-gradient(135deg, #fffef9 0%, #fff 50%); }
+
+.cal-mes-header { display:flex; align-items:baseline; gap: .75rem;
+    padding-bottom: .75rem; margin-bottom: 1rem;
+    border-bottom: 2px solid rgba(212,175,55,0.4); }
+.cal-mes-num { font-family: var(--font-heading); font-size: 2rem; font-weight: 700;
+    color: var(--color-accent-dark); line-height: 1; }
+.cal-mes-titulo { font-family: var(--font-heading); font-size: 1.3rem; margin: 0;
+    color: var(--color-primary-dark); flex-grow: 1; }
+.cal-mes-badge { background: var(--color-accent); color: var(--color-text);
+    padding: .15rem .5rem; border-radius: 999px; font-size: .65rem;
+    font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.cal-mes-vacio { color: var(--color-text-muted); font-size: .9rem; font-style: italic; }
+
+.cal-tareas-lista { list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: .9rem; }
+.cal-tarea { display:flex; gap:.75rem; align-items: flex-start; }
+.cal-tarea-icono { width: 38px; height: 38px; border-radius: 10px;
+    display:flex; align-items:center; justify-content:center; flex-shrink: 0;
+    font-size: 1.1rem; }
+.cal-tarea-cuerpo { flex-grow: 1; }
+.cal-tarea-titulo { font-size: .95rem; font-weight: 700; margin: 0 0 .25rem;
+    color: var(--color-primary-dark); display:flex; align-items:center; gap: .5rem;
+    flex-wrap: wrap; }
+.cal-tarea-prio { font-size: .65rem; padding: .1rem .45rem; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.cal-tarea-desc { color: var(--color-text-muted); font-size: .85rem; line-height: 1.5;
+    margin: 0 0 .5rem; }
+.cal-tarea-tip { background: rgba(212,175,55,0.1); border-left: 3px solid var(--color-accent);
+    padding: .5rem .75rem; border-radius: 6px; font-size: .8rem;
+    color: var(--color-text); display: flex; gap: .5rem; align-items: flex-start; }
+.cal-tarea-tip i { color: var(--color-accent-dark); flex-shrink: 0; margin-top: 2px; }
+
+
+/* ==========================================================================
+   PANEL SOCIO — Widgets de noticias + tareas del olivar
+   ========================================================================== */
+
+.panel-noticias-lista, .panel-tareas-lista { list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: .75rem; }
+
+.panel-noticia-item a { display:block; text-decoration:none; color: var(--color-text);
+    padding: .75rem; border-radius: 8px; border:1px solid rgba(0,0,0,0.05);
+    transition: all .15s; background: rgba(212,175,55,0.04); }
+.panel-noticia-item a:hover { background: rgba(212,175,55,0.1);
+    border-color: var(--color-accent); }
+.panel-noticia-item strong { display:block; color: var(--color-primary-dark);
+    margin-bottom: .25rem; font-family: var(--font-heading); font-size: 1rem; }
+.panel-noticia-meta { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap;
+    margin-bottom: .35rem; font-size:.7rem; }
+
+.panel-tarea-item { display:flex; gap:.7rem; padding: .6rem; border-radius: 8px;
+    background: rgba(44,76,59,0.03); }
+.panel-tarea-icono { width: 34px; height: 34px; border-radius: 8px;
+    display:flex; align-items:center; justify-content:center; flex-shrink: 0;
+    font-size: 1rem; }
+.panel-tarea-item strong { display:block; color: var(--color-primary-dark);
+    margin-bottom: .25rem; font-size: .9rem; }
+.panel-tarea-tip { background: rgba(212,175,55,0.1); border-left: 2px solid var(--color-accent);
+    padding: .35rem .55rem; border-radius: 4px; font-size: .75rem;
+    color: var(--color-text); margin-top: .35rem; line-height: 1.4; }
+.panel-tarea-tip i { color: var(--color-accent-dark); margin-right: .25rem; }
+
+
+/* --------------------------------------------------------------------------
+   FIN DE LA HOJA DE ESTILOS
+   Cooperativa San Juan Bautista © 2026
+
+   Sistema de diseño "Premium Orgánico"
+   Paleta: #FDFBF7 · #2C4C3B · #D4AF37 · #1A1A1A
+   Fuentes: Playfair Display + Inter
+   -------------------------------------------------------------------------- */

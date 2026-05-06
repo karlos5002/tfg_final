@@ -1,0 +1,15 @@
+{
+  "name": "cooperativa-sjb/web",
+  "description": "Web institucional y de comercio electrónico de la Cooperativa San Juan Bautista (TFG).",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.0",
+    "stripe/stripe-php": "^14.0",
+    "phpmailer/phpmailer": "^6.9"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
+}
